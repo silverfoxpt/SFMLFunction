@@ -14,6 +14,8 @@
 #include "Reuseable/math.h"
 #include "Reuseable/gameobjectmanager.h"
 
+#include "RPN/stringhelp.h"
+
 //really early stuff initialization
 Rand Randomize::rand;
 
