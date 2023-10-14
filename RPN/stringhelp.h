@@ -15,6 +15,12 @@
 class StrHelp {
     public:
         static std::string replace(std::string original, std::string sub, std::string rep);
+        static bool matchAtPos(std::string original, int pos, std::string sub);
+        
+        static bool isNum(char c);
+
+    private:
+        
 };
 
 #endif

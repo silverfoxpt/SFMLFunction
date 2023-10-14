@@ -12,6 +12,7 @@
 #include <memory>
 #include <chrono>
 #include <set>
+#include <stack>
 
 #include "../Reuseable/templateclass.h"
 
@@ -38,6 +39,9 @@ class RPN : Monobehaviour<sf::RenderWindow*> {
 
         //vars
         std::vector<opRpn> operators = {
+            {")", 0, false},
+            {"(", 0, false},
+
             {"+", 1, false},
             {"-", 1, false},
             {"*", 2, false},
