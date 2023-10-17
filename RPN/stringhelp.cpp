@@ -13,7 +13,7 @@ std::string StrHelp::replace(std::string original, std::string sub, std::string 
 
 bool StrHelp::matchAtPos(std::string original, int pos, std::string sub) {
     int len = sub.size();
-    if (pos < 0 || pos + len - 1 >= original.size()) {return false;}
+    if (pos < 0 || pos + len - 1 >= (int) original.size()) {return false;}
 
     int c = 0;
     for (int i = pos; i <= pos + len - 1; i++) {

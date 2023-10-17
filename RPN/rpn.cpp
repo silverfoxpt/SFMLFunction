@@ -27,7 +27,7 @@ std::vector<std::string> RPN::InfixToPostfix(std::string infix) {
     std::vector<std::string> postfix;
 
     int i = 0;
-    while (i < infix.size()) {
+    while (i < (int) infix.size()) {
         //check for operator
         bool isOperator = false; opRpn myOp;
         for (auto op: this->operators) {
@@ -40,17 +40,40 @@ std::vector<std::string> RPN::InfixToPostfix(std::string infix) {
 
         //if operator 
         if (isOperator) {
-            //pop all previous operator with higher or equal precedence  
-            while (ops.size() > 0) {
-                opRpn nextOp = ops.top();
-                if (nextOp.priority >= myOp.priority) {
-                    ops.pop();                      //remove from operator stack
-                    postfix.push_back(nextOp.op);   //push to postfix stack
-                }
+            //if opening bracket (
+            if (myOp.op == "(") {
+                ops.push(myOp);
             }
 
-            //push this operator to the stack
-            ops.push(myOp);
+            //if closing bracket )
+            else if (myOp.op == ")") {
+                while (ops.size() > 0 && ops.top().op != "(") {
+                    opRpn nextOp = ops.top(); ops.pop();
+                    postfix.push_back(nextOp.op);
+                }
+
+                if (ops.size() <= 0) {
+                    throw std::invalid_argument("Missing bracket pairs!");
+                }
+
+                ops.pop();
+            }
+
+            else { //normal operator
+                //pop all previous operator with higher or equal precedence  
+                while (ops.size() > 0) {
+                    opRpn nextOp = ops.top();
+                    if (nextOp.priority >= myOp.priority) {
+                        ops.pop();                      //remove from operator stack
+                        postfix.push_back(nextOp.op);   //push to postfix stack
+                    } else {
+                        break;
+                    }
+                }
+
+                //push this operator to the stack
+                ops.push(myOp);
+            }
         } else {
             //if number
             if (StrHelp::isNum(infix[i])) {
@@ -61,11 +84,7 @@ std::vector<std::string> RPN::InfixToPostfix(std::string infix) {
                     i++;
                 }
                 postfix.push_back(num);
-            }
-
-            //if opening bracket
-            else if () {
-
+                continue;
             }
 
             //if variable
@@ -74,6 +93,13 @@ std::vector<std::string> RPN::InfixToPostfix(std::string infix) {
                 postfix.push_back(var);
             }
         }
+        i++;
+    }
+
+    //push remaining operators to postfix
+    while (ops.size() > 0) {
+        opRpn nextOp = ops.top(); ops.pop();
+        postfix.push_back(nextOp.op);
     }
 
     return postfix;

@@ -16,7 +16,7 @@
 
 #include "../Reuseable/templateclass.h"
 
-#include "RPN/stringhelp.h"
+#include "stringhelp.h"
 
 struct opRpn {
     std::string op;
