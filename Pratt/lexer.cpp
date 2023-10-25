@@ -1,0 +1,78 @@
+#include "lexer.h"
+
+void Lexer::Initialize(sf::RenderWindow* window) {
+    this->window = window;
+
+    this->tokens.clear();
+    this->index = 0;
+}
+
+void Lexer::Update(sf::Event event) {
+
+}
+
+void Lexer::Visualize(sf::Event event) {
+
+}
+
+void Lexer::LateUpdate() {
+
+}
+
+void Lexer::Reset() {
+
+}
+
+Token Lexer::GetCurrentToken() {
+    if (this->index >= this->tokens.size()) {
+        return Token(TokenType::NULLVAL, "");
+    }
+
+    return this->tokens[this->index];
+}
+
+void Lexer::Eat(TokenType type) {
+    Token cur = this->GetCurrentToken();
+
+    if (cur.type == TokenType::NULLVAL) {
+        throw std::out_of_range("Invalid parse! Out of token.");
+    }
+
+    if (cur.type != type) {
+        throw std::invalid_argument("Invalid parse! Expected token not found.");
+    }
+
+    this->index++;
+}
+
+void Lexer::InitiateInput(std::string input) {
+    int i = 0;
+    while (i < input.size()) {
+        //match any possible operators
+        for (auto it: Token::tokenSpec) {
+            if (StrHelp::matchAtPos(input, i, it.first)) {
+                Token operatorToken(it.second, it.first);
+                this->tokens.push_back(operatorToken);
+
+                //push index
+                i += it.first.size();
+            }
+        }
+
+        //match any numbers
+        if (StrHelp::isNum(input[i])) {
+            std::string parsedNum = "";
+            while (i < input.size() && StrHelp::isNum(input[i])) {
+                parsedNum += input[i];
+                i++;
+            }
+
+            Token numToken(TokenType::NUMBER, parsedNum);
+            this->tokens.push_back(numToken);
+        }
+
+        //match variables - HASN'T BEEN IMPLEMENTED
+
+        throw std::invalid_argument("Undefined operators/number detected");
+    }
+}

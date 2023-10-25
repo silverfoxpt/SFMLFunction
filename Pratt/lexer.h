@@ -1,5 +1,5 @@
-#ifndef H_RPN
-#define H_RPN
+#ifndef H_LEXER
+#define H_LEXER
 
 #include <SFML/Graphics.hpp>
 
@@ -11,20 +11,13 @@
 #include <random>
 #include <memory>
 #include <chrono>
-#include <set>
-#include <stack>
 
 #include "../Reuseable/templateclass.h"
-
 #include "../Reuseable/stringhelp.h"
 
-struct opRpn {
-    std::string op;
-    int priority;
-    bool isPrefixOp;
-};
+#include "token.h"
 
-class RPN : Monobehaviour<sf::RenderWindow*> {
+class Lexer: Monobehaviour<sf::RenderWindow*> {
     public:
         sf::RenderWindow* window;
 
@@ -34,20 +27,14 @@ class RPN : Monobehaviour<sf::RenderWindow*> {
         void LateUpdate() override;
         void Reset() override;
 
-        //helper
-        std::vector<std::string> InfixToPostfix(std::string infix);
+        void InitiateInput(std::string input);
+        void Eat(TokenType type);
+        Token GetCurrentToken();
 
-        //vars
-        std::vector<opRpn> operators = {
-            {")", 0, false},
-            {"(", 0, false},
+        //public vars
+        std::vector<Token> tokens;
+        int index = 0;
 
-            {"+", 1, false},
-            {"-", 1, false},
-            {"*", 2, false},
-            {"/", 2, false},
-            {"^", 3, false}
-        };
     private:
         
 };
