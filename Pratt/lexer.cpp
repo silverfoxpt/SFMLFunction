@@ -49,6 +49,7 @@ void Lexer::InitiateInput(std::string input) {
     int i = 0;
     while (i < (int) input.size()) {
         //match any possible operators
+        bool foundOp = false;
         for (auto it: Token::tokenSpec) {
             if (StrHelp::matchAtPos(input, i, it.first)) {
                 Token operatorToken(it.second, it.first);
@@ -56,8 +57,11 @@ void Lexer::InitiateInput(std::string input) {
 
                 //push index
                 i += it.first.size();
+                foundOp = true;
+                break;
             }
         }
+        if (foundOp) {continue;}
 
         //match any integers - HASN'T BEEN IMPLEMENTED FOR REAL NUMBERS!
         if (StrHelp::isNum(input[i])) {
@@ -69,6 +73,8 @@ void Lexer::InitiateInput(std::string input) {
 
             Token numToken(TokenType::NUMBER, parsedNum);
             this->tokens.push_back(numToken);
+
+            continue;
         }
 
         //match variables - HASN'T BEEN IMPLEMENTED

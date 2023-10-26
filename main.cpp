@@ -43,12 +43,11 @@ void InitializeTest() {
 }
 
 void PostInitializeTest() {
-    std::string infix = "(5+2)-(3-4/2)^7*3";
-    auto post = myRpn.InfixToPostfix(infix);
-    for (auto x: post) {
-        std::cout << x << " ";
-    }
-    std::cout << '\n';
+    std::string infix = "5+2*3";
+    std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
+
+    infix = "5+2+3";
+    std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
 }
 
 void Initialize() {
