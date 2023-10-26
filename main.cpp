@@ -14,7 +14,7 @@
 #include "Reuseable/math.h"
 #include "Reuseable/gameobjectmanager.h"
 
-#include "RPN/stringhelp.h"
+#include "Reuseable/stringhelp.h"
 #include "RPN/rpn.h"
 
 //really early stuff initialization
