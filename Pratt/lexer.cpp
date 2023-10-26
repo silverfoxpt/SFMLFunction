@@ -24,7 +24,7 @@ void Lexer::Reset() {
 }
 
 Token Lexer::GetCurrentToken() {
-    if (this->index >= this->tokens.size()) {
+    if (this->index >= (int) this->tokens.size()) {
         return Token(TokenType::NULLVAL, "");
     }
 
@@ -47,7 +47,7 @@ void Lexer::Eat(TokenType type) {
 
 void Lexer::InitiateInput(std::string input) {
     int i = 0;
-    while (i < input.size()) {
+    while (i < (int) input.size()) {
         //match any possible operators
         for (auto it: Token::tokenSpec) {
             if (StrHelp::matchAtPos(input, i, it.first)) {
@@ -59,10 +59,10 @@ void Lexer::InitiateInput(std::string input) {
             }
         }
 
-        //match any numbers
+        //match any integers - HASN'T BEEN IMPLEMENTED FOR REAL NUMBERS!
         if (StrHelp::isNum(input[i])) {
             std::string parsedNum = "";
-            while (i < input.size() && StrHelp::isNum(input[i])) {
+            while (i < (int) input.size() && StrHelp::isNum(input[i])) {
                 parsedNum += input[i];
                 i++;
             }

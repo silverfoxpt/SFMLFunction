@@ -17,6 +17,8 @@
 #include "Reuseable/stringhelp.h"
 #include "RPN/rpn.h"
 
+#include "Pratt/parser.h"
+
 //really early stuff initialization
 Rand Randomize::rand;
 
@@ -25,6 +27,8 @@ sf::RenderWindow window(sf::VideoMode(800, 800), "SFML Function");
 sf::Clock deltaTime;
 
 RPN myRpn;
+Lexer lex;
+Parser parser;
 
 //static vars
 float GameManager::windowWidth                  = window.getSize().x;
@@ -51,6 +55,8 @@ void Initialize() {
     InitializeTest();
 
     myRpn.Initialize(&window);
+    lex.Initialize(&window);
+    parser.Initialize(&window, &lex);
 
     PostInitializeTest();
 }
