@@ -68,6 +68,20 @@ float Parser::InfixHandler(float lhs, TokenType type) {
 
 float Parser::PrefixHandler() {
     Token curToken = this->lex->GetCurrentToken();
+
+    if (curToken.type == TokenType::SUBTRACTION) {
+        curToken.value = "unary";
+        this->lex->Eat(TokenType::SUBTRACTION);
+
+        return -this->Expression(this->GetPrecedence(curToken));
+    }
+
+    if (curToken.type == TokenType::ADDITION) {
+        curToken.value = "unary";
+        this->lex->Eat(TokenType::ADDITION);
+
+        return +this->Expression(this->GetPrecedence(curToken));
+    }
     
     if (curToken.type == TokenType::LEFT_PARENTHESIS) {
         this->lex->Eat(TokenType::LEFT_PARENTHESIS);
@@ -78,6 +92,5 @@ float Parser::PrefixHandler() {
     }
 
     this->lex->Eat(TokenType::NUMBER);
-
     return std::stof(curToken.value);
 }

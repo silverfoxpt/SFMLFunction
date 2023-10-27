@@ -64,6 +64,9 @@ void PostInitializeTest() {
     infix = "5-(2+3)*8^2";
     //std::cout << infix << " = " << parser.Evaluate(infix);
     assert(std::abs(parser.Evaluate(infix) - (-315))  <= Math::FloatExponent);
+
+    infix = "--+-+5-2+-+1";
+    assert(std::abs(parser.Evaluate(infix) - (-8))  <= Math::FloatExponent);
 }
 
 void Initialize() {
