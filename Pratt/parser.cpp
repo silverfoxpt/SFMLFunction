@@ -68,6 +68,15 @@ float Parser::InfixHandler(float lhs, TokenType type) {
 
 float Parser::PrefixHandler() {
     Token curToken = this->lex->GetCurrentToken();
+    
+    if (curToken.type == TokenType::LEFT_PARENTHESIS) {
+        this->lex->Eat(TokenType::LEFT_PARENTHESIS);
+        float exp = this->Expression(0);
+        this->lex->Eat(TokenType::RIGHT_PARENTHESIS);
+
+        return exp;
+    }
+
     this->lex->Eat(TokenType::NUMBER);
 
     return std::stof(curToken.value);

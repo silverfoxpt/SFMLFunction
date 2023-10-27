@@ -5,5 +5,8 @@ std::map<std::string, TokenType> Token::tokenSpec = {
     {"*", TokenType::MULTIPLICATION},
     {"-", TokenType::SUBTRACTION},
     {"/", TokenType::DIVISION},
-    {"^", TokenType::EXPONENTIATION}
+    {"^", TokenType::EXPONENTIATION},
+
+    {"(", TokenType::LEFT_PARENTHESIS},
+    {")", TokenType::RIGHT_PARENTHESIS}
 };

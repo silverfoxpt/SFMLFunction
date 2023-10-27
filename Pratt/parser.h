@@ -40,7 +40,8 @@ class Parser: Monobehaviour<sf::RenderWindow*, Lexer*> {
             {"-", 2},
             {"*", 3},
             {"/", 3},
-            {"^", 4}
+            {"unary", 4},
+            {"^", 5}
         };
         
 };

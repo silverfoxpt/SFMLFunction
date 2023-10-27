@@ -14,12 +14,14 @@
 
 enum TokenType {
     NUMBER, 
-    
+
     ADDITION,
     MULTIPLICATION,
     SUBTRACTION,
     DIVISION,
     EXPONENTIATION,
+    LEFT_PARENTHESIS,
+    RIGHT_PARENTHESIS,
 
     NULLVAL
 };

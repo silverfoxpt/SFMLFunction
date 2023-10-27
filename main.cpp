@@ -48,18 +48,22 @@ void InitializeTest() {
 void PostInitializeTest() {
     std::string infix = "5+2*3";
     //std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
-    assert(std::abs(parser.Evaluate(infix)) - 11 <= Math::FloatExponent);
+    assert(std::abs(parser.Evaluate(infix) - 11) <= Math::FloatExponent);
 
     infix = "5+2+3";
     //std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
-    assert(std::abs(parser.Evaluate(infix)) - 10 <= Math::FloatExponent);
+    assert(std::abs(parser.Evaluate(infix) - 10) <= Math::FloatExponent);
 
     infix = "5/2+3*5-1";
     //std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
-    assert(std::abs(parser.Evaluate(infix)) - 16.5 <= Math::FloatExponent);
+    assert(std::abs(parser.Evaluate(infix) - 16.5) <= Math::FloatExponent);
 
     infix = "5^2^2-3*6";
-    assert(std::abs(parser.Evaluate(infix)) - 607 <= Math::FloatExponent);
+    assert(std::abs(parser.Evaluate(infix) - 607) <= Math::FloatExponent);
+
+    infix = "5-(2+3)*8^2";
+    //std::cout << infix << " = " << parser.Evaluate(infix);
+    assert(std::abs(parser.Evaluate(infix) - (-315))  <= Math::FloatExponent);
 }
 
 void Initialize() {
