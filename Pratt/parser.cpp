@@ -53,6 +53,14 @@ float Parser::InfixHandler(float lhs, TokenType type) {
         return lhs + this->Expression(newPrec);
     } else if (type == TokenType::MULTIPLICATION) {
         return lhs * this->Expression(newPrec);
+    } else if (type == TokenType::SUBTRACTION) {
+        return lhs - this->Expression(newPrec);
+    } else if (type == TokenType::DIVISION) {
+        return lhs / this->Expression(newPrec);
+    } else if (type == TokenType::EXPONENTIATION) {
+        return std::pow(lhs, this->Expression(newPrec - 1)); 
+        //power rule follows right hand first
+        //for example, 2^3^5 should be evaluated as 2^(3^5), not (2^3)^5 like addition or multiplication
     }
 
     throw std::invalid_argument("Undefined operators/number detected");

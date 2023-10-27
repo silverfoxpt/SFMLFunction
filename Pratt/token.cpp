@@ -3,4 +3,7 @@
 std::map<std::string, TokenType> Token::tokenSpec = {
     {"+", TokenType::ADDITION},
     {"*", TokenType::MULTIPLICATION},
+    {"-", TokenType::SUBTRACTION},
+    {"/", TokenType::DIVISION},
+    {"^", TokenType::EXPONENTIATION}
 };

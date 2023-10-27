@@ -37,7 +37,10 @@ class Parser: Monobehaviour<sf::RenderWindow*, Lexer*> {
     private:
         std::map<std::string, int> precedence = {
             {"+", 2},
-            {"*", 3}
+            {"-", 2},
+            {"*", 3},
+            {"/", 3},
+            {"^", 4}
         };
         
 };

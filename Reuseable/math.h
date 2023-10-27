@@ -17,6 +17,7 @@
 class Math {
     public:
         static constexpr float Exponent = 7;
+        static constexpr float FloatExponent = 0.001;
 
         static float DotProd(sf::Vector2f a, sf::Vector2f b) {
             return a.x * b.x + a.y * b.y;

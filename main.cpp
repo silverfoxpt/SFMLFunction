@@ -8,6 +8,7 @@
 #include <random>
 #include <memory>
 #include <chrono>
+#include <cassert>
 
 #include "Reuseable/gameManager.h"
 #include "Reuseable/randomsfml.h"
@@ -15,6 +16,8 @@
 #include "Reuseable/gameobjectmanager.h"
 
 #include "Reuseable/stringhelp.h"
+#include "Reuseable/math.h"
+
 #include "RPN/rpn.h"
 
 #include "Pratt/parser.h"
@@ -44,10 +47,19 @@ void InitializeTest() {
 
 void PostInitializeTest() {
     std::string infix = "5+2*3";
-    std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
+    //std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
+    assert(std::abs(parser.Evaluate(infix)) - 11 <= Math::FloatExponent);
 
     infix = "5+2+3";
-    std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
+    //std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
+    assert(std::abs(parser.Evaluate(infix)) - 10 <= Math::FloatExponent);
+
+    infix = "5/2+3*5-1";
+    //std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
+    assert(std::abs(parser.Evaluate(infix)) - 16.5 <= Math::FloatExponent);
+
+    infix = "5^2^2-3*6";
+    assert(std::abs(parser.Evaluate(infix)) - 607 <= Math::FloatExponent);
 }
 
 void Initialize() {

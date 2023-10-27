@@ -14,8 +14,13 @@
 
 enum TokenType {
     NUMBER, 
+    
     ADDITION,
     MULTIPLICATION,
+    SUBTRACTION,
+    DIVISION,
+    EXPONENTIATION,
+
     NULLVAL
 };
 
