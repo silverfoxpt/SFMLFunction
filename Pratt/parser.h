@@ -16,6 +16,11 @@
 #include "../Reuseable/stringhelp.h"
 #include "lexer.h"
 
+struct Func {
+    bool matched;
+    float value;
+};
+
 class Parser: Monobehaviour<sf::RenderWindow*, Lexer*> {
     public:
         sf::RenderWindow* window;
@@ -30,6 +35,10 @@ class Parser: Monobehaviour<sf::RenderWindow*, Lexer*> {
         float Evaluate(std::string input);
         float Expression(int curPrecedence);
         float PrefixHandler();
+
+        Func TrigPrefixHandler();
+        float CurlyParenthesisHandler();
+
         float InfixHandler(float lhs, TokenType type);
 
         int GetPrecedence(Token token);

@@ -46,6 +46,7 @@ void InitializeTest() {
 }
 
 void PostInitializeTest() {
+
     std::string infix = "5+2*3";
     //std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
     assert(std::abs(parser.Evaluate(infix) - 11) <= Math::FloatExponent);
@@ -67,6 +68,9 @@ void PostInitializeTest() {
 
     infix = "--+-+5-2+-+1";
     assert(std::abs(parser.Evaluate(infix) - (-8))  <= Math::FloatExponent);
+
+    infix = "-+--\\sin{\\cos{\\tan{2}}}";
+    assert(std::abs(parser.Evaluate(infix) - (0.54495))  <= Math::FloatExponent);
 }
 
 void Initialize() {

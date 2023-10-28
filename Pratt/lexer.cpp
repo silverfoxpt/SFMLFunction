@@ -79,6 +79,6 @@ void Lexer::InitiateInput(std::string input) {
 
         //match variables - HASN'T BEEN IMPLEMENTED
 
-        throw std::invalid_argument("Undefined operators/number detected");
+        throw std::invalid_argument("Undefined operators/number detected: Lexer");
     }
 }

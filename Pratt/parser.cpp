@@ -59,14 +59,20 @@ float Parser::InfixHandler(float lhs, TokenType type) {
         return lhs / this->Expression(newPrec);
     } else if (type == TokenType::EXPONENTIATION) {
         return std::pow(lhs, this->Expression(newPrec - 1)); 
+
         //power rule follows right hand first
         //for example, 2^3^5 should be evaluated as 2^(3^5), not (2^3)^5 like addition or multiplication
     }
 
-    throw std::invalid_argument("Undefined operators/number detected");
+    throw std::invalid_argument("Undefined operators/number detected: Infix");
 }
 
 float Parser::PrefixHandler() {
+    Func trigHandler = this->TrigPrefixHandler();
+    if (trigHandler.matched) {
+        return trigHandler.value;
+    }
+
     Token curToken = this->lex->GetCurrentToken();
 
     if (curToken.type == TokenType::SUBTRACTION) {
@@ -87,10 +93,47 @@ float Parser::PrefixHandler() {
         this->lex->Eat(TokenType::LEFT_PARENTHESIS);
         float exp = this->Expression(0);
         this->lex->Eat(TokenType::RIGHT_PARENTHESIS);
-
+ 
         return exp;
     }
 
     this->lex->Eat(TokenType::NUMBER);
     return std::stof(curToken.value);
+}
+
+Func Parser::TrigPrefixHandler() {
+    Token curToken = this->lex->GetCurrentToken();
+    switch(curToken.type) {
+        case TokenType::SINE: {
+            this->lex->Eat(curToken.type);
+            return {true, std::sin(this->CurlyParenthesisHandler())};
+            break;
+        } 
+        case TokenType::COSINE: {
+            this->lex->Eat(curToken.type);
+            return {true, std::cos(this->CurlyParenthesisHandler())};
+            break;
+        } 
+        case TokenType::TANGENT: {
+            this->lex->Eat(curToken.type);
+            return {true, std::tan(this->CurlyParenthesisHandler())};
+            break;
+        } 
+        case TokenType::COTANGENT: {
+            this->lex->Eat(curToken.type);
+            return {true, 1.0f / std::tan(this->CurlyParenthesisHandler())};
+            break;
+        } 
+        default: {
+            return {false, 0};
+        }
+    }
+}
+
+float Parser::CurlyParenthesisHandler() {
+    this->lex->Eat(TokenType::LEFT_CURLY_PARENTHESIS);
+    float exp = this->Expression(0);
+    this->lex->Eat(TokenType::RIGHT_CURLY_PARENTHESIS);
+
+    return exp;
 }
