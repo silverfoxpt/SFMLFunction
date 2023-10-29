@@ -3,6 +3,8 @@
 void ASTParser::Initialize(sf::RenderWindow* window, Lexer* lex) {
     this->window = window;
     this->lex = lex;
+
+    this->nodes.reserve(100000);
 }
 
 void ASTParser::Update(sf::Event event) {
@@ -28,14 +30,14 @@ int ASTParser::GetPrecedence(Token token) {
     return this->precedence[token.value];
 }
 
-float ASTParser::Evaluate(std::string input) {
+ASTNode* ASTParser::Evaluate(std::string input) {
     this->lex->InitiateInput(input);
-    float output = this->Expression(0);
+    ASTNode* output = this->Expression(0);
     return output;
 }
 
-float ASTParser::Expression(int curPrecedence) {
-    float lhs = this->PrefixHandler();
+ASTNode* ASTParser::Expression(int curPrecedence) {
+    ASTNode* lhs = this->PrefixHandler();
 
     while (curPrecedence < this->GetPrecedence(this->lex->GetCurrentToken())) {
         lhs = this->InfixHandler(lhs, this->lex->GetCurrentToken().type);
@@ -44,12 +46,13 @@ float ASTParser::Expression(int curPrecedence) {
     return lhs;
 }
 
-float ASTParser::InfixHandler(float lhs, TokenType type) {
+ASTNode* ASTParser::InfixHandler(ASTNode* lhs, TokenType type) {
     Token curToken = this->lex->GetCurrentToken();
     this->lex->Eat(type);
 
     int newPrec = this->GetPrecedence(curToken);
     if (type == TokenType::ADDITION) {
+        ASTNode up("<Binary operator +>");
         return lhs + this->Expression(newPrec);
     } else if (type == TokenType::MULTIPLICATION) {
         return lhs * this->Expression(newPrec);
@@ -67,8 +70,8 @@ float ASTParser::InfixHandler(float lhs, TokenType type) {
     throw std::invalid_argument("Undefined operators/number detected: Infix");
 }
 
-float ASTParser::PrefixHandler() {
-    Func trigHandler = this->TrigPrefixHandler();
+ASTNode* ASTParser::PrefixHandler() {
+    ASTFunc trigHandler = this->TrigPrefixHandler();
     if (trigHandler.matched) {
         return trigHandler.value;
     }
@@ -91,7 +94,7 @@ float ASTParser::PrefixHandler() {
     
     if (curToken.type == TokenType::LEFT_PARENTHESIS) {
         this->lex->Eat(TokenType::LEFT_PARENTHESIS);
-        float exp = this->Expression(0);
+        ASTNode* exp = this->Expression(0);
         this->lex->Eat(TokenType::RIGHT_PARENTHESIS);
  
         return exp;
@@ -101,7 +104,7 @@ float ASTParser::PrefixHandler() {
     return std::stof(curToken.value);
 }
 
-Func ASTParser::TrigPrefixHandler() {
+ASTFunc ASTParser::TrigPrefixHandler() {
     Token curToken = this->lex->GetCurrentToken();
     switch(curToken.type) {
         case TokenType::SINE: {
@@ -130,9 +133,9 @@ Func ASTParser::TrigPrefixHandler() {
     }
 }
 
-float ASTParser::CurlyParenthesisHandler() {
+ASTNode* ASTParser::CurlyParenthesisHandler() {
     this->lex->Eat(TokenType::LEFT_CURLY_PARENTHESIS);
-    float exp = this->Expression(0);
+    ASTNode* exp = this->Expression(0);
     this->lex->Eat(TokenType::RIGHT_CURLY_PARENTHESIS);
 
     return exp;

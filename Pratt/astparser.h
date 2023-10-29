@@ -16,15 +16,33 @@
 #include "../Reuseable/stringhelp.h"
 #include "lexer.h"
 
-struct Func {
+struct ASTFunc {
     bool matched;
-    float value;
+    ASTNode* value;
 };
+
+struct ASTNode {
+    std::string value;
+    std::vector<ASTNode*> children;
+
+    ASTNode() {
+        this->value = "";
+    }
+
+    ASTNode(std::string value) {
+        this->value = value;
+    }
+
+    void AddChild(ASTNode* node) {
+        this->children.push_back(node);
+    }
+};  
 
 class ASTParser: Monobehaviour<sf::RenderWindow*, Lexer*> {
     public:
         sf::RenderWindow* window;
         Lexer* lex;
+        std::vector<ASTNode> nodes; 
 
         void Initialize(sf::RenderWindow* window, Lexer* lex) override;
         void Update(sf::Event event) override;
@@ -32,15 +50,23 @@ class ASTParser: Monobehaviour<sf::RenderWindow*, Lexer*> {
         void LateUpdate() override;
         void Reset() override;
 
-        float Evaluate(std::string input);
-        float Expression(int curPrecedence);
-        float PrefixHandler();
+        ASTNode* Evaluate(std::string input);
+        ASTNode* Expression(int curPrecedence);
+        ASTNode* PrefixHandler();
 
-        Func TrigPrefixHandler();
-        float CurlyParenthesisHandler();
+        ASTFunc TrigPrefixHandler();
+        ASTNode* CurlyParenthesisHandler();
 
-        float InfixHandler(float lhs, TokenType type);
+        ASTNode* InfixHandler(ASTNode* lhs, TokenType type);
         int GetPrecedence(Token token);
+
+        ASTNode* AddNewNode(ASTNode node) {
+            this->nodes.push_back(node);
+            if (this->nodes.size() >= 100000) {
+                throw std::overflow_error("Too many nodes! Please reduce the number of identifiers within expression!");
+            } 
+            return &this->nodes[this->nodes.size()-1];
+        }
 
     private:
         std::map<std::string, int> precedence = {
