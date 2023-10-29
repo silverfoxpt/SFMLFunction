@@ -31,7 +31,17 @@ int ASTParser::GetPrecedence(Token token) {
     return this->precedence[token.value];
 }
 
-ASTNode* ASTParser::Evaluate(std::string input) {
+void ASTParser::Debug(ASTNode* root, int level) {
+    for (int i = 0; i < level; i++) {
+        std::cout << "    ";
+    }
+    std::cout << root->value << '\n';
+    for (auto child: root->children) {
+        this->Debug(child, level + 1);
+    }
+}
+
+ASTNode* ASTParser::Parse(std::string input) {
     this->lex->InitiateInput(input);
     ASTNode* output = this->Expression(0);
     return output;

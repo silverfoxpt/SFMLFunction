@@ -20,7 +20,8 @@ void Lexer::LateUpdate() {
 }
 
 void Lexer::Reset() {
-
+    this->tokens.clear();
+    this->index = 0;
 }
 
 Token Lexer::GetCurrentToken() {
@@ -46,6 +47,8 @@ void Lexer::Eat(TokenType type) {
 }
 
 void Lexer::InitiateInput(std::string input) {
+    this->Reset();
+
     int i = 0;
     while (i < (int) input.size()) {
         //match any possible operators

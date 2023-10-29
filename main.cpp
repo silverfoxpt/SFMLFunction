@@ -21,6 +21,7 @@
 #include "RPN/rpn.h"
 
 #include "Pratt/parser.h"
+#include "Pratt/astparser.h"
 
 //really early stuff initialization
 Rand Randomize::rand;
@@ -33,6 +34,9 @@ RPN myRpn;
 Lexer lex;
 Parser parser;
 
+Lexer astLex;
+ASTParser astParser;
+
 //static vars
 float GameManager::windowWidth                  = window.getSize().x;
 float GameManager::windowHeight                 = window.getSize().y;
@@ -41,12 +45,7 @@ float GameManager::deltaTime                    = 1/300.0;
 sf::Vector2u GameManager::mainWindowSize        = sf::Vector2u(800, 800);
 sf::Vector2u GameManager::originalResolution    = sf::Vector2u(1920, 1080);
 
-void InitializeTest() {
-    
-}
-
-void PostInitializeTest() {
-
+void EvaluateParserTest() {
     std::string infix = "5+2*3";
     //std::cout << infix << " = " << parser.Evaluate(infix) << '\n';
     assert(std::abs(parser.Evaluate(infix) - 11) <= Math::FloatExponent);
@@ -73,12 +72,30 @@ void PostInitializeTest() {
     assert(std::abs(parser.Evaluate(infix) - (0.54495))  <= Math::FloatExponent);
 }
 
+void ASTParserTest() {
+    std::string infix = "5-(2+3)*8^2-\\sin{3+8}";
+    ASTNode* root = astParser.Parse(infix);
+    astParser.Debug(root, 0);
+}
+
+void InitializeTest() {
+    
+}
+
+void PostInitializeTest() {
+    EvaluateParserTest();
+    ASTParserTest();
+}
+
 void Initialize() {
     InitializeTest();
 
     myRpn.Initialize(&window);
     lex.Initialize(&window);
     parser.Initialize(&window, &lex);
+
+    astLex.Initialize(&window);
+    astParser.Initialize(&window, &astLex);
 
     PostInitializeTest();
 }

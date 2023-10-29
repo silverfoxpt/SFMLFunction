@@ -51,7 +51,7 @@ class ASTParser: Monobehaviour<sf::RenderWindow*, Lexer*> {
         void LateUpdate() override;
         void Reset() override;
 
-        ASTNode* Evaluate(std::string input);
+        ASTNode* Parse(std::string input);
         ASTNode* Expression(int curPrecedence);
         ASTNode* PrefixHandler();
 
@@ -68,6 +68,8 @@ class ASTParser: Monobehaviour<sf::RenderWindow*, Lexer*> {
             } 
             return &this->nodes[this->nodes.size()-1];
         }
+
+        void Debug(ASTNode* root, int level);
 
     private:
         std::map<std::string, int> precedence = {
