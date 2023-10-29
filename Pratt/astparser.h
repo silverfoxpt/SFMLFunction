@@ -1,5 +1,5 @@
-#ifndef H_PARSER
-#define H_PARSER
+#ifndef H_ASTPARSER
+#define H_ASTPARSER
 
 #include <SFML/Graphics.hpp>
 
@@ -21,7 +21,7 @@ struct Func {
     float value;
 };
 
-class Parser: Monobehaviour<sf::RenderWindow*, Lexer*> {
+class ASTParser: Monobehaviour<sf::RenderWindow*, Lexer*> {
     public:
         sf::RenderWindow* window;
         Lexer* lex;
