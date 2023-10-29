@@ -16,27 +16,28 @@
 #include "../Reuseable/stringhelp.h"
 #include "lexer.h"
 
+class ASTNode {
+    public:
+        std::string value;
+        std::vector<ASTNode*> children;
+
+        ASTNode() {
+            this->value = "";
+        }
+
+        ASTNode(std::string value) {
+            this->value = value;
+        }
+
+        void AddChild(ASTNode* node) {
+            this->children.push_back(node);
+        }
+};  
+
 struct ASTFunc {
     bool matched;
     ASTNode* value;
 };
-
-struct ASTNode {
-    std::string value;
-    std::vector<ASTNode*> children;
-
-    ASTNode() {
-        this->value = "";
-    }
-
-    ASTNode(std::string value) {
-        this->value = value;
-    }
-
-    void AddChild(ASTNode* node) {
-        this->children.push_back(node);
-    }
-};  
 
 class ASTParser: Monobehaviour<sf::RenderWindow*, Lexer*> {
     public:
