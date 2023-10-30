@@ -35,7 +35,7 @@ void ASTParser::Debug(ASTNode* root, int level) {
     for (int i = 0; i < level; i++) {
         std::cout << "    ";
     }
-    std::cout << root->value << '\n';
+    std::cout << root->description << '\n';
     for (auto child: root->children) {
         this->Debug(child, level + 1);
     }
@@ -63,7 +63,7 @@ ASTNode* ASTParser::InfixHandler(ASTNode* lhs, TokenType type) {
 
     int newPrec = this->GetPrecedence(curToken);
     if (type == TokenType::ADDITION) {
-        ASTNode tmp("<Binary operator +>"); 
+        ASTNode tmp(curToken.value, "<Binary operator +>", curToken.type); 
         
         ASTNode* par = this->AddNewNode(tmp);
         ASTNode* rhs = this->Expression(newPrec);
@@ -71,7 +71,7 @@ ASTNode* ASTParser::InfixHandler(ASTNode* lhs, TokenType type) {
         par->AddChild(lhs); par->AddChild(rhs);
         return par;
     } else if (type == TokenType::MULTIPLICATION) {
-        ASTNode tmp("<Binary operator *>"); 
+        ASTNode tmp(curToken.value, "<Binary operator *>", curToken.type); 
         
         ASTNode* par = this->AddNewNode(tmp);
         ASTNode* rhs = this->Expression(newPrec);
@@ -79,7 +79,7 @@ ASTNode* ASTParser::InfixHandler(ASTNode* lhs, TokenType type) {
         par->AddChild(lhs); par->AddChild(rhs);
         return par;
     } else if (type == TokenType::SUBTRACTION) {
-        ASTNode tmp("<Binary operator ->"); 
+        ASTNode tmp(curToken.value, "<Binary operator ->", curToken.type); 
         
         ASTNode* par = this->AddNewNode(tmp);
         ASTNode* rhs = this->Expression(newPrec);
@@ -87,7 +87,7 @@ ASTNode* ASTParser::InfixHandler(ASTNode* lhs, TokenType type) {
         par->AddChild(lhs); par->AddChild(rhs);
         return par;
     } else if (type == TokenType::DIVISION) {
-        ASTNode tmp("<Binary operator />"); 
+        ASTNode tmp(curToken.value, "<Binary operator />", curToken.type); 
         
         ASTNode* par = this->AddNewNode(tmp);
         ASTNode* rhs = this->Expression(newPrec);
@@ -95,7 +95,7 @@ ASTNode* ASTParser::InfixHandler(ASTNode* lhs, TokenType type) {
         par->AddChild(lhs); par->AddChild(rhs);
         return par;
     } else if (type == TokenType::EXPONENTIATION) {
-        ASTNode tmp("<Binary operator ^>"); 
+        ASTNode tmp(curToken.value, "<Binary operator ^>", curToken.type); 
         
         ASTNode* par = this->AddNewNode(tmp);
         ASTNode* rhs = this->Expression(newPrec - 1);
@@ -122,7 +122,7 @@ ASTNode* ASTParser::PrefixHandler() {
         curToken.value = "unary";
         this->lex->Eat(TokenType::SUBTRACTION);
 
-        ASTNode tmp("<Unary operator ->"); ASTNode* par = this->AddNewNode(tmp);
+        ASTNode tmp(curToken.value, "<Unary operator ->", curToken.type); ASTNode* par = this->AddNewNode(tmp);
         ASTNode* rhs = this->Expression(this->GetPrecedence(curToken));
 
         par->AddChild(rhs);
@@ -133,7 +133,7 @@ ASTNode* ASTParser::PrefixHandler() {
         curToken.value = "unary";
         this->lex->Eat(TokenType::ADDITION);
 
-        ASTNode tmp("<Unary operator +>"); ASTNode* par = this->AddNewNode(tmp);
+        ASTNode tmp(curToken.value, "<Unary operator +>", curToken.type); ASTNode* par = this->AddNewNode(tmp);
         ASTNode* rhs = this->Expression(this->GetPrecedence(curToken));
 
         par->AddChild(rhs);
@@ -151,7 +151,7 @@ ASTNode* ASTParser::PrefixHandler() {
     //only case left is number
     this->lex->Eat(TokenType::NUMBER);
 
-    ASTNode tmp("<Number " + curToken.value + ">"); ASTNode* val = this->AddNewNode(tmp);
+    ASTNode tmp(curToken.value, "<Number " + curToken.value + ">", curToken.type); ASTNode* val = this->AddNewNode(tmp);
     return val;
 }
 
@@ -161,7 +161,7 @@ ASTFunc ASTParser::TrigPrefixHandler() {
         case TokenType::SINE: {
             this->lex->Eat(curToken.type);
 
-            ASTNode tmp("<Function " + curToken.value + ">"); ASTNode* par = this->AddNewNode(tmp);
+            ASTNode tmp(curToken.value, "<Function " + curToken.value + ">", curToken.type); ASTNode* par = this->AddNewNode(tmp);
             par->AddChild(this->CurlyParenthesisHandler());
 
             return {true, par};
@@ -170,7 +170,7 @@ ASTFunc ASTParser::TrigPrefixHandler() {
         case TokenType::COSINE: {
             this->lex->Eat(curToken.type);
             
-            ASTNode tmp("<Function " + curToken.value + ">"); ASTNode* par = this->AddNewNode(tmp);
+            ASTNode tmp(curToken.value, "<Function " + curToken.value + ">", curToken.type); ASTNode* par = this->AddNewNode(tmp);
             par->AddChild(this->CurlyParenthesisHandler());
 
             return {true, par};
@@ -179,7 +179,7 @@ ASTFunc ASTParser::TrigPrefixHandler() {
         case TokenType::TANGENT: {
             this->lex->Eat(curToken.type);
             
-            ASTNode tmp("<Function " + curToken.value + ">"); ASTNode* par = this->AddNewNode(tmp);
+            ASTNode tmp(curToken.value, "<Function " + curToken.value + ">", curToken.type); ASTNode* par = this->AddNewNode(tmp);
             par->AddChild(this->CurlyParenthesisHandler());
 
             return {true, par};
@@ -188,7 +188,7 @@ ASTFunc ASTParser::TrigPrefixHandler() {
         case TokenType::COTANGENT: {
             this->lex->Eat(curToken.type);
             
-            ASTNode tmp("<Function " + curToken.value + ">"); ASTNode* par = this->AddNewNode(tmp);
+            ASTNode tmp(curToken.value, "<Function " + curToken.value + ">", curToken.type); ASTNode* par = this->AddNewNode(tmp);
             par->AddChild(this->CurlyParenthesisHandler());
 
             return {true, par};
