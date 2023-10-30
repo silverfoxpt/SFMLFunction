@@ -73,9 +73,9 @@ void EvaluateParserTest() {
 }
 
 void ASTParserTest() {
-    std::string infix = "5-(2+3)*8^2-\\sin{3+8}";
-    ASTNode* root = astParser.Parse(infix);
-    astParser.Debug(root, 0);
+    //std::string infix = "5-(2+3)*8^2-\\sin{3+8}";
+    //ASTNode* root = astParser.Parse(infix);
+    //astParser.Debug(root, 0);
 }
 
 void InitializeTest() {
