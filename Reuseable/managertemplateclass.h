@@ -22,8 +22,24 @@ class Manager {
         Manager() {
             this->controlledComponents.reserve(100000);
         }
-        virtual Child* AddNewControlledComponent(Child args)   = 0;
-        virtual Child* GetControlledComponent(int idx) = 0;
+
+        Child* AddNewControlledComponent(Child args) {
+            if (this->controlledComponents.size() >= this->maxElement) {
+                std::cerr << "TextElementManager: Overflow. Please resize array." << '\n';
+                return nullptr;
+            }
+
+            this->controlledComponents.push_back(args);
+            return &this->controlledComponents[this->controlledComponents.size()-1];
+        }
+        
+        Child* GetControlledComponent(int idx) {
+            if (idx < 0 || idx >= this->controlledComponents.size()) {
+                return nullptr;
+            }
+
+            return &this->controlledComponents[idx];
+        }
 
         const static int maxElement = 100000;
 };

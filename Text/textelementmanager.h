@@ -29,9 +29,6 @@ class TextElementManager: Monobehaviour<sf::RenderWindow*>, Manager<TextElement>
         void LateUpdate() override;
         void Reset() override;
 
-        TextElement* AddNewControlledComponent(TextElement child);
-        TextElement* GetControlledComponent(int idx);
-
     private:
         
 };
