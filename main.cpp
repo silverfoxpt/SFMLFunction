@@ -23,6 +23,8 @@
 #include "Pratt/parser.h"
 #include "Pratt/astparser.h"
 
+#include "Text/textelement.h"
+
 //really early stuff initialization
 Rand Randomize::rand;
 
@@ -44,6 +46,10 @@ float GameManager::deltaTime                    = 1/300.0;
 
 sf::Vector2u GameManager::mainWindowSize        = sf::Vector2u(800, 800);
 sf::Vector2u GameManager::originalResolution    = sf::Vector2u(1920, 1080);
+
+//test vars
+TextElement test;
+sf::Font font;
 
 void EvaluateParserTest() {
     std::string infix = "5+2*3";
@@ -72,10 +78,21 @@ void EvaluateParserTest() {
     assert(std::abs(parser.Evaluate(infix) - (0.54495))  <= Math::FloatExponent);
 }
 
+//NOTE: REMEMBER TO DEACTIVATE THIS TEST
 void ASTParserTest() {
-    //std::string infix = "5-(2+3)*8^2-\\sin{3+8}";
-    //ASTNode* root = astParser.Parse(infix);
+    std::string infix = "5-(2+3)*8^2-\\sin{3+8}";
+    ASTNode* root = astParser.Parse(infix);
     //astParser.Debug(root, 0);
+}
+
+void TextTest() {
+    if (!font.loadFromFile("./font/MathJax_Main-Regular.otf"))
+    {
+        std::cerr << "Can't load font!";
+    }
+
+    test = TextElement("Hello", font);
+    test.SetPosition(sf::Vector2f(0, 0));
 }
 
 void InitializeTest() {
@@ -85,6 +102,7 @@ void InitializeTest() {
 void PostInitializeTest() {
     EvaluateParserTest();
     ASTParserTest();
+    TextTest();
 }
 
 void Initialize() {
@@ -106,6 +124,9 @@ void Update(sf::Event event) {
 
 void Visualize(sf::Event event) {
     myRpn.Visualize(event);
+
+    //test
+    window.draw(test.tex);
 }
 
 void LateUpdate() {
