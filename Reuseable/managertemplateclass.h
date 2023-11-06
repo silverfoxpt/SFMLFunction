@@ -18,8 +18,14 @@ class Manager {
         std::vector<Child> controlledComponents;
 
     public:
+        //IMPORTANT: REMEMBER TO CALL THIS 
+        Manager() {
+            this->controlledComponents.reserve(100000);
+        }
         virtual Child* AddNewControlledComponent(Child args)   = 0;
         virtual Child* GetControlledComponent(int idx) = 0;
+
+        const static int maxElement = 100000;
 };
 
 #endif
