@@ -126,7 +126,7 @@ void Visualize(sf::Event event) {
     myRpn.Visualize(event);
 
     //test
-    window.draw(test.tex);
+    test.Draw(&window);
 }
 
 void LateUpdate() {

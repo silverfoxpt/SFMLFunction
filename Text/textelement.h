@@ -12,28 +12,26 @@
 #include <memory>
 #include <chrono>
 
-class TextElement {
+#include "displayelement.h"
+
+class TextElement : public DisplayElement {
     public:
         sf::Text tex;
 
         TextElement() { }
+        TextElement(std::string text, sf::Font &font);
 
-        TextElement(std::string text, sf::Font &font) {
-            tex.setString(text);
-            tex.setFont(font);
-
-            tex.setFillColor(sf::Color::White);
-            tex.setCharacterSize(100);
-            
-            //VERY IMPORTANT LINE :) 
-            //Put text origin back to its true bound: https://en.sfml-dev.org/forums/index.php?topic=20284.0
-            //Always put this at last
-            tex.setOrigin(sf::Vector2f(tex.getGlobalBounds().left, tex.getGlobalBounds().top)); 
-        }
-
-        void SetPosition(sf::Vector2f pos) {
-            tex.setPosition(pos);
-        }
+        void SetPosition(sf::Vector2f pos) override;
+        void Draw(sf::RenderWindow* window) override;
+        void Move(sf::Vector2f dir) override;
+        void Scale(float sc) override;
+        void SetHardOrigin() override;
+        
+        sf::Vector2f GetPosition() override;
+        float GetBottomX() override;
+        float GetBottomY() override;
+        float GetHeight() override;
+        float GetWidth() override;
 };
 
 #endif
