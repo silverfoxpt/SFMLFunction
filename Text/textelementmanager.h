@@ -16,8 +16,11 @@
 #include "../Reuseable/templateclass.h"
 
 #include "textelement.h"
+#include "displayelement.h"
 
-class TextElementManager: Monobehaviour<sf::RenderWindow*>, Manager<TextElement>{
+class DisplayElement;
+
+class TextElementManager: Monobehaviour<sf::RenderWindow*>, public Manager<TextElement>{
     public:
         sf::RenderWindow* window;
 
@@ -28,6 +31,11 @@ class TextElementManager: Monobehaviour<sf::RenderWindow*>, Manager<TextElement>
         void Visualize(sf::Event event) override;
         void LateUpdate() override;
         void Reset() override;
+
+        DisplayElement* GetDisplayElement(TextElement* ele) {
+            if (ele == nullptr) {return nullptr;}
+            return ele;
+        }
 
     private:
         

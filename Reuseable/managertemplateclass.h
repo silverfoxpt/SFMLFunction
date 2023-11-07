@@ -17,24 +17,24 @@ class Manager {
     protected:
         std::vector<Child> controlledComponents;
 
-    public:
+    public:        
         //IMPORTANT: REMEMBER TO CALL THIS 
         Manager() {
             this->controlledComponents.reserve(100000);
         }
 
-        Child* AddNewControlledComponent(Child args) {
-            if (this->controlledComponents.size() >= this->maxElement) {
-                std::cerr << "TextElementManager: Overflow. Please resize array." << '\n';
+        virtual Child* AddNewControlledComponent(Child args) {
+            if ((int) this->controlledComponents.size() >= this->maxElement) {
+                std::cerr << "Manager: Overflow. Please resize array." << '\n';
                 return nullptr;
             }
 
             this->controlledComponents.push_back(args);
             return &this->controlledComponents[this->controlledComponents.size()-1];
         }
-        
-        Child* GetControlledComponent(int idx) {
-            if (idx < 0 || idx >= this->controlledComponents.size()) {
+
+        virtual Child* GetControlledComponent(int idx) {
+            if (idx < 0 || idx >= (int) this->controlledComponents.size()) {
                 return nullptr;
             }
 

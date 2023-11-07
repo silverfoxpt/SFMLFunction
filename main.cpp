@@ -24,6 +24,7 @@
 #include "Pratt/astparser.h"
 
 #include "Text/textelement.h"
+#include "Text/textelementmanager.h"
 
 //really early stuff initialization
 Rand Randomize::rand;
@@ -38,6 +39,8 @@ Parser parser;
 
 Lexer astLex;
 ASTParser astParser;
+
+TextElementManager textElementManager;
 
 //static vars
 float GameManager::windowWidth                  = window.getSize().x;
@@ -93,6 +96,8 @@ void TextTest() {
 
     test = TextElement("Hello", font);
     test.SetPosition(sf::Vector2f(0, 0));
+
+    textElementManager.AddNewControlledComponent(test);
 }
 
 void InitializeTest() {
@@ -115,18 +120,19 @@ void Initialize() {
     astLex.Initialize(&window);
     astParser.Initialize(&window, &astLex);
 
+    textElementManager.Initialize(&window);
+
     PostInitializeTest();
 }
 
 void Update(sf::Event event) {
     myRpn.Update(event);
+    textElementManager.Update(event);
 }
 
 void Visualize(sf::Event event) {
     myRpn.Visualize(event);
-
-    //test
-    test.Draw(&window);
+    textElementManager.Visualize(event);
 }
 
 void LateUpdate() {
