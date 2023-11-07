@@ -96,6 +96,8 @@ void TextTest() {
 
     test = TextElement("Hello", font);
     test.SetPosition(sf::Vector2f(0, 0));
+    test.Move(sf::Vector2f(100, 100));
+    test.Scale(1.5);
 
     textElementManager.AddNewControlledComponent(test);
 }

@@ -14,7 +14,8 @@ TextElement::TextElement(std::string text, sf::Font &font) {
 }
 
 void TextElement::SetHardOrigin() {
-    tex.setOrigin(sf::Vector2f(tex.getGlobalBounds().left, tex.getGlobalBounds().top)); 
+    //std::cout << tex.getGlobalBounds().left << " " <<  tex.getGlobalBounds().top << '\n';
+    tex.setOrigin(sf::Vector2f(tex.getGlobalBounds().left, tex.getGlobalBounds().top) - this->GetPosition()); 
 }
 
 void TextElement::Scale(float sc) {
@@ -32,6 +33,9 @@ void TextElement::Scale(float sc) {
         this->tex.setCharacterSize(point);
         curHeight = this->GetHeight();
     }
+    this->SetHardOrigin();
+    
+    std::cout << this->GetPosition().x << " " << this->GetPosition().y << '\n';
 }
 
 void TextElement::SetPosition(sf::Vector2f pos) {
