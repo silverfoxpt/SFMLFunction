@@ -51,7 +51,6 @@ sf::Vector2u GameManager::mainWindowSize        = sf::Vector2u(800, 800);
 sf::Vector2u GameManager::originalResolution    = sf::Vector2u(1920, 1080);
 
 //test vars
-TextElement test;
 sf::Font font;
 
 void EvaluateParserTest() {
@@ -89,17 +88,7 @@ void ASTParserTest() {
 }
 
 void TextTest() {
-    if (!font.loadFromFile("./font/MathJax_Main-Regular.otf"))
-    {
-        std::cerr << "Can't load font!";
-    }
-
-    test = TextElement("Hello", font);
-    test.SetPosition(sf::Vector2f(0, 0));
-    test.Move(sf::Vector2f(100, 100));
-    test.Scale(1.5);
-
-    textElementManager.AddNewControlledComponent(test);
+    
 }
 
 void InitializeTest() {
@@ -113,6 +102,11 @@ void PostInitializeTest() {
 }
 
 void Initialize() {
+    if (!font.loadFromFile("./font/MathJax_Main-Regular.otf"))
+    {
+        std::cerr << "Can't load font!";
+    }
+
     InitializeTest();
 
     myRpn.Initialize(&window);
@@ -122,7 +116,7 @@ void Initialize() {
     astLex.Initialize(&window);
     astParser.Initialize(&window, &astLex);
 
-    textElementManager.Initialize(&window);
+    textElementManager.Initialize(&window, font);
 
     PostInitializeTest();
 }

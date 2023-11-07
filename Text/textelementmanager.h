@@ -20,13 +20,14 @@
 
 class DisplayElement;
 
-class TextElementManager: Monobehaviour<sf::RenderWindow*>, public Manager<TextElement>{
+class TextElementManager: Monobehaviour<sf::RenderWindow*, sf::Font>, public Manager<TextElement>{
     public:
         sf::RenderWindow* window;
+        sf::Font font;
 
         TextElementManager() : Manager() {}
 
-        void Initialize(sf::RenderWindow* window) override;
+        void Initialize(sf::RenderWindow* window, sf::Font font) override;
         void Update(sf::Event event) override;
         void Visualize(sf::Event event) override;
         void LateUpdate() override;
@@ -35,6 +36,11 @@ class TextElementManager: Monobehaviour<sf::RenderWindow*>, public Manager<TextE
         DisplayElement* GetDisplayElement(TextElement* ele) {
             if (ele == nullptr) {return nullptr;}
             return ele;
+        }
+
+        DisplayElement* CreateDisplayText(std::string tex) {
+            //upcastin immediately from TextElement to DisplayElement
+            return this->AddNewControlledComponent(TextElement(tex, this->font));
         }
 
     private:

@@ -1,7 +1,8 @@
 #include "textelementmanager.h"
 
-void TextElementManager::Initialize(sf::RenderWindow* window) {
+void TextElementManager::Initialize(sf::RenderWindow* window, sf::Font font) {
     this->window = window;
+    this->font = font;
 }
 
 void TextElementManager::Update(sf::Event event) {
