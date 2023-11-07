@@ -13,6 +13,7 @@
 #include <chrono>
 
 #include "displayelement.h"
+#include "../Pratt/token.h"
 
 class TextElement : public DisplayElement {
     public:
