@@ -6,6 +6,7 @@ TextElement::TextElement(std::string text, sf::Font &font) {
 
     tex.setFillColor(sf::Color::White);
     tex.setCharacterSize(30);
+    tex.setPosition(sf::Vector2f(0, 0));
     
     //VERY IMPORTANT LINE :) 
     //Put text origin back to its true bound: https://en.sfml-dev.org/forums/index.php?topic=20284.0
@@ -14,8 +15,7 @@ TextElement::TextElement(std::string text, sf::Font &font) {
 }
 
 void TextElement::SetHardOrigin() {
-    //std::cout << tex.getGlobalBounds().left << " " <<  tex.getGlobalBounds().top << '\n';
-    tex.setOrigin(sf::Vector2f(tex.getGlobalBounds().left, tex.getGlobalBounds().top) - this->GetPosition()); 
+    tex.setOrigin(sf::Vector2f(tex.getLocalBounds().left, tex.getLocalBounds().top)); 
 }
 
 void TextElement::Scale(float sc) {
@@ -35,7 +35,7 @@ void TextElement::Scale(float sc) {
     }
     this->SetHardOrigin();
     
-    std::cout << this->GetPosition().x << " " << this->GetPosition().y << '\n';
+    //std::cout << this->GetPosition().x << " " << this->GetPosition().y << '\n';
 }
 
 void TextElement::SetPosition(sf::Vector2f pos) {

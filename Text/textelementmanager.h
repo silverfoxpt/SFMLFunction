@@ -39,8 +39,8 @@ class TextElementManager: Monobehaviour<sf::RenderWindow*, sf::Font>, public Man
         }
 
         DisplayElement* CreateDisplayText(std::string tex) {
-            //upcastin immediately from TextElement to DisplayElement
-            return this->AddNewControlledComponent(TextElement(tex, this->font));
+            //upcasting immediately from TextElement to DisplayElement
+            return this->AddNewControlledComponent(TextElement(tex, font));
         }
 
     private:

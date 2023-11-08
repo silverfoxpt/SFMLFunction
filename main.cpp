@@ -25,6 +25,7 @@
 
 #include "Text/textelement.h"
 #include "Text/textelementmanager.h"
+#include "Text/displaygroup.h"
 
 //really early stuff initialization
 Rand Randomize::rand;
@@ -88,11 +89,25 @@ void ASTParserTest() {
 }
 
 void TextTest() {
-    
+    auto t1 = textElementManager.CreateDisplayText("2");
+    auto t2 = textElementManager.CreateDisplayText("+");
+    auto t3 = textElementManager.CreateDisplayText("3");
+
+    auto group1 = DisplayGroup({t1}, Token(TokenType::NULLVAL, "0")); 
+    auto group2 = DisplayGroup({t2}, Token(TokenType::NULLVAL, "0"));
+    auto group3 = DisplayGroup({t3}, Token(TokenType::NULLVAL, "0"));
+
+    group2.moveX(group1.GetTotalWidth());
+    group3.moveX(group2.GetTotalWidth());
+
+    group3.Merge(group2);
+    group3.Merge(group1);
+
+    group3.Scale(2);
 }
 
 void InitializeTest() {
-    
+    //DO NOT PUT SHIT IN HERE UNLESS YOU'RE SURE THEY RUN BEFORE INITIALIZATION HAPPENS
 }
 
 void PostInitializeTest() {
@@ -117,7 +132,6 @@ void Initialize() {
     astParser.Initialize(&window, &astLex);
 
     textElementManager.Initialize(&window, font);
-
     PostInitializeTest();
 }
 

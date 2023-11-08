@@ -18,23 +18,24 @@
 class DisplayGroup {
     public:
         std::vector<DisplayElement*> elements;
-        Token prevToken = {TokenType::NULLVAL, 0};
+        Token prevToken = {TokenType::NULLVAL, "0"};
 
-        DisplayGroup(std::vector<DisplayElement*> elements, Token prevToken) {
+        DisplayGroup(std::vector<DisplayElement*> elements, Token prev) {
             this->elements = elements;
-            this->prevToken = prevToken;
+            this->prevToken = prev;
         }
 
         int GetTotalHeight();
         int GetTotalWidth();
         int GetTopX();
         int GetTopY();
+        sf::Vector2f GetTop();
 
         void Scale(float sc);
         void moveX(float x);    
         void moveY(float y);
 
-        void merge(DisplayGroup other);
+        void Merge(DisplayGroup other);
 };
 
 #endif
