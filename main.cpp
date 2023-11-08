@@ -22,6 +22,7 @@
 
 #include "Pratt/parser.h"
 #include "Pratt/astparser.h"
+#include "Pratt/expvisual.h"
 
 #include "Text/textelement.h"
 #include "Text/textelementmanager.h"
@@ -42,6 +43,7 @@ Lexer astLex;
 ASTParser astParser;
 
 TextElementManager textElementManager;
+ExpressionVisual expressionVisual;
 
 //static vars
 float GameManager::windowWidth                  = window.getSize().x;
@@ -89,24 +91,16 @@ void ASTParserTest() {
 }
 
 void TextTest() {
-    auto t1 = textElementManager.CreateDisplayText("2");
-    auto t2 = textElementManager.CreateDisplayText("+");
-    auto t3 = textElementManager.CreateDisplayText("3");
+    std::string infix = "5";
 
-    auto group1 = DisplayGroup({t1}, Token(TokenType::NULLVAL, "0")); 
-    auto group2 = DisplayGroup({t2}, Token(TokenType::NULLVAL, "0"));
-    auto group3 = DisplayGroup({t3}, Token(TokenType::NULLVAL, "0"));
+    astParser.Reset();
+    ASTNode* root = astParser.Parse(infix);
 
-    group2.moveX(group1.GetTotalWidth());
-    group3.moveX(group2.GetTotalWidth());
-
-    group3.Merge(group2);
-    group3.Merge(group1);
-
-    group3.Scale(2);
+    expressionVisual.Reset();
+    expressionVisual.Evaluate(root);
 }
 
-void InitializeTest() {
+void PreInitializeTest() {
     //DO NOT PUT SHIT IN HERE UNLESS YOU'RE SURE THEY RUN BEFORE INITIALIZATION HAPPENS
 }
 
@@ -122,7 +116,8 @@ void Initialize() {
         std::cerr << "Can't load font!";
     }
 
-    InitializeTest();
+    PreInitializeTest();
+    textElementManager.Initialize(&window, font);
 
     myRpn.Initialize(&window);
     lex.Initialize(&window);
@@ -130,8 +125,8 @@ void Initialize() {
 
     astLex.Initialize(&window);
     astParser.Initialize(&window, &astLex);
+    expressionVisual.Initialize(&window, &astParser, &textElementManager);
 
-    textElementManager.Initialize(&window, font);
     PostInitializeTest();
 }
 

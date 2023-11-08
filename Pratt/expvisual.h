@@ -13,19 +13,25 @@
 #include <chrono>
 
 #include "astparser.h"
+#include "../Text/displaygroup.h"
+#include "../Text/textelementmanager.h"
 
-class ExpressionVisual: Monobehaviour<sf::RenderWindow*, ASTParser*> {
+class ExpressionVisual: Monobehaviour<sf::RenderWindow*, ASTParser*, TextElementManager*> {
     public:
         sf::RenderWindow* window;
         ASTParser* parser;
+        TextElementManager* textManager;
 
-        void Initialize(sf::RenderWindow* window, ASTParser* parser) override;
+        void Initialize(sf::RenderWindow* window, ASTParser* parser, TextElementManager* textManager) override;
         void Update(sf::Event event) override;
         void Visualize(sf::Event event) override;
         void LateUpdate() override;
         void Reset() override;
 
+        DisplayGroup Evaluate(ASTNode* root);
+
     private:
+        DisplayGroup GetDisplayGroupFromText(std::string text, Token prevToken);
         
 };
 

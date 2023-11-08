@@ -19,5 +19,6 @@ void TextElementManager::LateUpdate() {
 }
 
 void TextElementManager::Reset() {
-
+    this->controlledComponents.clear();
+    this->controlledComponents.reserve(this->maxElement);
 }
