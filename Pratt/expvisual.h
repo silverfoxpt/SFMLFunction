@@ -30,8 +30,13 @@ class ExpressionVisual: Monobehaviour<sf::RenderWindow*, ASTParser*, TextElement
 
         DisplayGroup Evaluate(ASTNode* root);
 
+        //variables
+        int horizontalBuffer = 5;
+
     private:
         DisplayGroup GetDisplayGroupFromText(std::string text, Token prevToken);
+        DisplayGroup MergeGroupToRight(DisplayGroup first, DisplayGroup second);
+        DisplayGroup ParenthesizeGroup(DisplayGroup group);
         
 };
 

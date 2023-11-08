@@ -91,13 +91,14 @@ void ASTParserTest() {
 }
 
 void TextTest() {
-    std::string infix = "5";
+    std::string infix = "(5-2*(2+3))*(2*3-2)*3";
 
     astParser.Reset();
     ASTNode* root = astParser.Parse(infix);
 
     expressionVisual.Reset();
-    expressionVisual.Evaluate(root);
+    auto finalDisplay = expressionVisual.Evaluate(root);
+    finalDisplay.Scale(2);
 }
 
 void PreInitializeTest() {
