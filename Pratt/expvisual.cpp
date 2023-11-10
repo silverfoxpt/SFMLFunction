@@ -124,6 +124,15 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
     if (root->type == TokenType::SINE) {
 
     }
+    if (root->type == TokenType::COSINE) {
+
+    }
+    if (root->type == TokenType::TANGENT) {
+
+    }
+    if (root->type == TokenType::COTANGENT) {
+
+    }
 
     //catch all
     return DisplayGroup({}, Token(TokenType::NULLVAL, "0"));
