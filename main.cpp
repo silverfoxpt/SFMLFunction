@@ -26,6 +26,7 @@
 
 #include "Text/textelement.h"
 #include "Text/textelementmanager.h"
+#include "Text/recmanager.h"
 #include "Text/displaygroup.h"
 
 //really early stuff initialization
@@ -43,6 +44,7 @@ Lexer astLex;
 ASTParser astParser;
 
 TextElementManager textElementManager;
+RectangleElementManager rectangleElementManager;
 ExpressionVisual expressionVisual;
 
 //static vars
@@ -92,13 +94,19 @@ void ASTParserTest() {
 
 void TextTest() {
     std::string infix = "(5-2*(2+3))*(2*3-2)*3";
+    //std::string infix = "2*(-3)";
 
     astParser.Reset();
+    rectangleElementManager.Reset();
+    textElementManager.Reset();
+
     ASTNode* root = astParser.Parse(infix);
 
     expressionVisual.Reset();
     auto finalDisplay = expressionVisual.Evaluate(root);
     finalDisplay.Scale(2);
+
+    astParser.Debug(root, 0);
 }
 
 void PreInitializeTest() {
@@ -118,6 +126,7 @@ void Initialize() {
     }
 
     PreInitializeTest();
+    rectangleElementManager.Initialize(&window);
     textElementManager.Initialize(&window, font);
 
     myRpn.Initialize(&window);
@@ -126,7 +135,7 @@ void Initialize() {
 
     astLex.Initialize(&window);
     astParser.Initialize(&window, &astLex);
-    expressionVisual.Initialize(&window, &astParser, &textElementManager);
+    expressionVisual.Initialize(&window, &astParser, &textElementManager, &rectangleElementManager);
 
     PostInitializeTest();
 }

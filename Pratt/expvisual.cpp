@@ -1,9 +1,11 @@
 #include "expvisual.h"
 
-void ExpressionVisual::Initialize(sf::RenderWindow* window, ASTParser* parser, TextElementManager* textManager) {
+void ExpressionVisual::Initialize(sf::RenderWindow* window, ASTParser* parser, TextElementManager* textManager,
+    RectangleElementManager* recManager) {
     this->window = window;
     this->parser = parser;
     this->textManager = textManager;
+    this->recManager = recManager;
 }
 
 void ExpressionVisual::Update(sf::Event event) {

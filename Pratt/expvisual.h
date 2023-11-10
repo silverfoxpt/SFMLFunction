@@ -15,14 +15,17 @@
 #include "astparser.h"
 #include "../Text/displaygroup.h"
 #include "../Text/textelementmanager.h"
+#include "../Text/recmanager.h"
 
-class ExpressionVisual: Monobehaviour<sf::RenderWindow*, ASTParser*, TextElementManager*> {
+class ExpressionVisual: Monobehaviour<sf::RenderWindow*, ASTParser*, TextElementManager*, RectangleElementManager*> {
     public:
         sf::RenderWindow* window;
         ASTParser* parser;
         TextElementManager* textManager;
+        RectangleElementManager* recManager;
 
-        void Initialize(sf::RenderWindow* window, ASTParser* parser, TextElementManager* textManager) override;
+        void Initialize(sf::RenderWindow* window, ASTParser* parser, TextElementManager* textManager, 
+            RectangleElementManager* recManager) override;
         void Update(sf::Event event) override;
         void Visualize(sf::Event event) override;
         void LateUpdate() override;
