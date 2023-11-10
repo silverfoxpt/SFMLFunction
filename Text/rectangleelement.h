@@ -16,7 +16,7 @@
 
 class RectangleElement : public DisplayElement {
     public:
-        const int originalHeight = 5;
+        const int originalHeight = 1;
         sf::RectangleShape shape;
 
         RectangleElement(int width) {

@@ -106,6 +106,25 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
         }
     }
 
+    //division
+    if (root->type == TokenType::DIVISION) {
+        auto first = Evaluate(root->children[0]);
+        auto second = Evaluate(root->children[1]);
+
+        auto midline = this->GetDisplayGroupFromRec(std::max(first.GetTotalWidth(), second.GetTotalWidth()) + this->lineWidthBuffer,
+            Token(TokenType::NULLVAL, "0"));
+
+        auto combine = this->MergeGroupToBottom(this->MergeGroupToBottom(first, midline), second);
+        combine.prevToken = Token(root->type, root->value);
+
+        return combine;
+    }
+
+    //trig functions
+    if (root->type == TokenType::SINE) {
+
+    }
+
     //catch all
     return DisplayGroup({}, Token(TokenType::NULLVAL, "0"));
 }
@@ -114,6 +133,14 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
 //get group from single text
 DisplayGroup ExpressionVisual::GetDisplayGroupFromText(std::string text, Token prevToken) {
     DisplayElement* newElement = this->textManager->CreateDisplayText(text);
+    DisplayGroup newDisplayGroup({newElement}, prevToken);
+
+    return newDisplayGroup;
+}
+
+//get group from single rec
+DisplayGroup ExpressionVisual::GetDisplayGroupFromRec(int width, Token prevToken) {
+    DisplayElement* newElement = this->recManager->CreateDisplayRectangle(width);
     DisplayGroup newDisplayGroup({newElement}, prevToken);
 
     return newDisplayGroup;
@@ -130,6 +157,21 @@ DisplayGroup ExpressionVisual::MergeGroupToRight(DisplayGroup first, DisplayGrou
 
     //move second group
     second.moveX(first.GetTotalWidth() + this->horizontalBuffer);
+    first.Merge(second);
+
+    return first;
+}
+
+DisplayGroup ExpressionVisual::MergeGroupToBottom(DisplayGroup first, DisplayGroup second) {
+    //adjust x value
+    if (first.GetTotalWidth() > second.GetTotalWidth()) {
+        second.moveX((first.GetTotalWidth() - second.GetTotalWidth()) / 2);
+    } else if (first.GetTotalWidth() < second.GetTotalWidth()) {
+        first.moveX((second.GetTotalWidth() - first.GetTotalWidth()) / 2);
+    }
+
+    //move second group
+    second.moveY(first.GetTotalHeight() + this->verticalBuffer);
     first.Merge(second);
 
     return first;

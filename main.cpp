@@ -93,7 +93,7 @@ void ASTParserTest() {
 }
 
 void TextTest() {
-    std::string infix = "(5-2*(2+3))*(2*3-2)*3";
+    std::string infix = "(5-2*(2/3))/(2*3-2)*3/2";
     //std::string infix = "2*(-3)";
 
     astParser.Reset();
@@ -143,11 +143,13 @@ void Initialize() {
 void Update(sf::Event event) {
     myRpn.Update(event);
     textElementManager.Update(event);
+    rectangleElementManager.Update(event);
 }
 
 void Visualize(sf::Event event) {
     myRpn.Visualize(event);
     textElementManager.Visualize(event);
+    rectangleElementManager.Visualize(event);
 }
 
 void LateUpdate() {
