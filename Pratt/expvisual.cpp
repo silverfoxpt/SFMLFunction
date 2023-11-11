@@ -120,18 +120,33 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
         return combine;
     }
 
+    //exponentiation
+    if (root->type == TokenType::EXPONENTIATION) {
+        auto first = Evaluate(root->children[0]);
+        auto second = Evaluate(root->children[1]);
+
+        float xPosOfSecond = first.GetTotalWidth() + this->horizontalBuffer * 2;
+        float yPosOfFirst = second.GetTotalHeight() * this->exponentScale / 2; 
+
+        first.moveY(yPosOfFirst);
+        second.Scale(this->exponentScale); //scale before moving
+        second.moveX(xPosOfSecond);
+
+        first.Merge(second);
+        first.prevToken = Token(root->type, root->value);
+
+        return first; 
+    }
+
     //trig functions
-    if (root->type == TokenType::SINE) {
+    if (Token::isFunction(root->type)) {
+        DisplayGroup name = this->GetDisplayGroupFromText(root->value.substr(1), Token(TokenType::NULLVAL, "0"));
 
-    }
-    if (root->type == TokenType::COSINE) {
+        auto first = Evaluate(root->children[0]);
+        auto combine = this->MergeGroupToRight(name, this->ParenthesizeGroup(first));
 
-    }
-    if (root->type == TokenType::TANGENT) {
-
-    }
-    if (root->type == TokenType::COTANGENT) {
-
+        combine.prevToken = Token(root->type, root->value);
+        return combine;
     }
 
     //catch all

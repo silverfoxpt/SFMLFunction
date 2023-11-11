@@ -87,14 +87,16 @@ void EvaluateParserTest() {
 
 //NOTE: REMEMBER TO DEACTIVATE THIS TEST
 void ASTParserTest() {
-    std::string infix = "5-(2+3)*8^2-\\sin{3+8}";
+    std::string infix = "0";
     ASTNode* root = astParser.Parse(infix);
     //astParser.Debug(root, 0);
 }
 
 void TextTest() {
-    std::string infix = "(5-2*(2/3))/(2*3-2)*3/2";
+    //std::string infix = "\\sin{3/2+5}*(5-2*(2/3))/(2*3-2)*3/2";
+    std::string infix = "(5-(2+3)*8^2-\\sin{3+8})^(\\sin{2/3+1})*10^(-99+\\tan{23-6})";
     //std::string infix = "2*(-3)";
+    //std::string infix = "(2/3)^(3/2)";
 
     astParser.Reset();
     rectangleElementManager.Reset();
@@ -104,7 +106,6 @@ void TextTest() {
 
     expressionVisual.Reset();
     auto finalDisplay = expressionVisual.Evaluate(root);
-    finalDisplay.Scale(2);
 
     astParser.Debug(root, 0);
 }

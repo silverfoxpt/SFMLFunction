@@ -18,3 +18,10 @@ std::map<std::string, TokenType> Token::tokenSpec = {
     {"\\tan", TokenType::TANGENT},
     {"\\cot", TokenType::COTANGENT},
 };
+
+std::set<TokenType> Token::functionSpec = {
+    TokenType::COSINE,  
+    TokenType::SINE,  
+    TokenType::COTANGENT,  
+    TokenType::TANGENT
+};

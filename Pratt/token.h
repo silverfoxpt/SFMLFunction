@@ -11,6 +11,7 @@
 #include <random>
 #include <memory>
 #include <chrono>
+#include <set>
 
 enum TokenType {
     NUMBER, 
@@ -37,6 +38,12 @@ enum TokenType {
 class Token {
     public:
         static std::map<std::string, TokenType> tokenSpec;
+        static std::set<TokenType> functionSpec;
+
+        static bool isFunction(TokenType type) {
+            if (functionSpec.find(type) != functionSpec.end()) {return true;}
+            return false;
+        }
 
         Token(TokenType type, std::string value) {
             this->type = type;

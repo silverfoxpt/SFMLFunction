@@ -37,6 +37,7 @@ class ExpressionVisual: Monobehaviour<sf::RenderWindow*, ASTParser*, TextElement
         int horizontalBuffer = 5;
         int verticalBuffer = 8;
         int lineWidthBuffer = 20;
+        float exponentScale = 0.75f;
 
     private:
         DisplayGroup GetDisplayGroupFromText(std::string text, Token prevToken);
