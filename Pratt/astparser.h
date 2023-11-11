@@ -16,28 +16,7 @@
 #include "../Reuseable/stringhelp.h"
 #include "lexer.h"
 
-class ASTNode {
-    public:
-        std::string value;
-        std::string description;
-        TokenType type;
-        std::vector<ASTNode*> children;
-
-        ASTNode() {
-            this->value = "";
-            this->description = "";
-        }
-
-        ASTNode(std::string value, std::string description, TokenType type) {
-            this->value = value;
-            this->description = description;
-            this->type = type;
-        }
-
-        void AddChild(ASTNode* node) {
-            this->children.push_back(node);
-        }
-};  
+#include "astnode.h"
 
 struct ASTFunc {
     bool matched;
