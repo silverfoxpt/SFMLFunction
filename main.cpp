@@ -93,8 +93,8 @@ void ASTParserTest() {
 }
 
 void TextTest() {
-    //std::string infix = "\\sin{3/2+5}*(5-2*(2/3))/(2*3-2)*3/2";
-    std::string infix = "(5-(2+3)*8^2-\\sin{3+8})^(\\sin{2/3+1})*10^(-99+\\tan{23-6})";
+    std::string infix = "\\sin{a^2+5}*(5-c*(2/3))/(2*x*y-2)*y/2";
+    //std::string infix = "(5-(2+3)*8^2-\\sin{3+8})^(\\sin{2/3+1})*10^(-99+\\tan{23-6})";
     //std::string infix = "2*(-3)";
     //std::string infix = "(2/3)^(3/2)";
 

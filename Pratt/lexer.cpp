@@ -66,6 +66,17 @@ void Lexer::InitiateInput(std::string input) {
         }
         if (foundOp) {continue;}
 
+        //match any possible symbol
+        if (StrHelp::isAlpha(input[i])) {
+            std::string parsedSym = "";
+            parsedSym += input[i]; i++;
+
+            Token symToken(TokenType::SYMBOL, parsedSym);
+            this->tokens.push_back(symToken);
+
+            continue;
+        }
+
         //match any integers - HASN'T BEEN IMPLEMENTED FOR REAL NUMBERS!
         if (StrHelp::isNum(input[i])) {
             std::string parsedNum = "";

@@ -148,9 +148,16 @@ ASTNode* ASTParser::PrefixHandler() {
         return exp;
     }
 
+    //handle symbol
+    if (curToken.type == TokenType::SYMBOL) {
+        this->lex->Eat(TokenType::SYMBOL);
+        ASTNode tmp(curToken.value, "<Symbol " + curToken.value + ">", curToken.type); ASTNode* val = this->AddNewNode(tmp);
+
+        return val;
+    }
+
     //only case left is number
     this->lex->Eat(TokenType::NUMBER);
-
     ASTNode tmp(curToken.value, "<Number " + curToken.value + ">", curToken.type); ASTNode* val = this->AddNewNode(tmp);
     return val;
 }

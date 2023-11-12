@@ -30,7 +30,7 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
     }
 
     if (root->children.size() == 0) { //leaf node, either number or variable, handle it
-        if (root->type == TokenType::NUMBER) {
+        if (root->type == TokenType::NUMBER || root->type == TokenType::SYMBOL) {
             return this->GetDisplayGroupFromText(root->value, Token(root->type, root->value));
         } 
 
@@ -52,7 +52,7 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
             return combine;
         } else { //unary
             auto left = Evaluate(root->children[0]);
-            if (left.prevToken.type != TokenType::NUMBER && 
+            if (left.prevToken.type != TokenType::NUMBER && left.prevToken.type != TokenType::SYMBOL &&
                     parser->GetPrecedence(left.prevToken) < parser->GetPrecedence(Token(root->type, root->value))) {
                 left = this->ParenthesizeGroup(left);
             }
@@ -72,14 +72,14 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
         auto right = Evaluate(root->children[1]);
 
         bool parenthesizeLeft = false;
-        if ((left.prevToken.type != TokenType::NUMBER && parser->GetPrecedence(left.prevToken) < parser->GetPrecedence(Token(root->type, root->value)))
+        if ((left.prevToken.type != TokenType::NUMBER && left.prevToken.type != TokenType::SYMBOL && parser->GetPrecedence(left.prevToken) < parser->GetPrecedence(Token(root->type, root->value)))
             || left.prevToken.value == "unary") {
             left = this->ParenthesizeGroup(left);
             parenthesizeLeft = true;
         }
 
         bool parenthesizeRight = false;
-        if ((right.prevToken.type != TokenType::NUMBER && parser->GetPrecedence(right.prevToken) < parser->GetPrecedence(Token(root->type, root->value)))
+        if ((right.prevToken.type != TokenType::NUMBER && right.prevToken.type != TokenType::SYMBOL && parser->GetPrecedence(right.prevToken) < parser->GetPrecedence(Token(root->type, root->value)))
             || right.prevToken.value == "unary") {
             right = this->ParenthesizeGroup(right);
             parenthesizeRight = true;
@@ -88,7 +88,13 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
         //no need for multiplication sign
         if ((parenthesizeLeft && parenthesizeRight) ||
             (parenthesizeLeft && right.prevToken.type == TokenType::NUMBER) ||
-            (left.prevToken.type == TokenType::NUMBER && parenthesizeRight)
+            (parenthesizeLeft && right.prevToken.type == TokenType::SYMBOL) ||
+
+            (left.prevToken.type == TokenType::NUMBER && parenthesizeRight) ||
+            (left.prevToken.type == TokenType::NUMBER && right.prevToken.type == TokenType::SYMBOL) ||
+
+            (left.prevToken.type == TokenType::SYMBOL && right.prevToken.type == TokenType::SYMBOL) ||
+            (left.prevToken.type == TokenType::SYMBOL && parenthesizeRight) 
         ) {
             auto combine = this->MergeGroupToRight(left, right);
             combine.prevToken = Token(root->type, root->value);
@@ -125,7 +131,7 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
         auto first = Evaluate(root->children[0]);
         auto second = Evaluate(root->children[1]);
 
-        float xPosOfSecond = first.GetTotalWidth() + this->horizontalBuffer * 2;
+        float xPosOfSecond = first.GetTotalWidth() + this->horizontalBuffer;
         float yPosOfFirst = second.GetTotalHeight() * this->exponentScale / 2; 
 
         first.moveY(yPosOfFirst);
@@ -138,7 +144,7 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
         return first; 
     }
 
-    //trig functions
+    //trig functions and other functions in general
     if (Token::isFunction(root->type)) {
         DisplayGroup name = this->GetDisplayGroupFromText(root->value.substr(1), Token(TokenType::NULLVAL, "0"));
 

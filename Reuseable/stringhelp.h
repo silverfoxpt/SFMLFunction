@@ -18,6 +18,7 @@ class StrHelp {
         static bool matchAtPos(std::string original, int pos, std::string sub);
         
         static bool isNum(char c);
+        static bool isAlpha(char c);
 
     private:
         

@@ -15,6 +15,7 @@
 
 enum TokenType {
     NUMBER, 
+    SYMBOL,
     
     SINE,
     COSINE,

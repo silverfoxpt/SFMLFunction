@@ -33,3 +33,11 @@ bool StrHelp::isNum(char c) {
     }
     return false;
 }
+
+bool StrHelp::isAlpha(char c) {
+    std::string alpha = "qwertyuiopasdfghjklzxcvbnm";
+    if (alpha.find(c) != std::string::npos) {
+        return true;
+    }
+    return false;
+}
