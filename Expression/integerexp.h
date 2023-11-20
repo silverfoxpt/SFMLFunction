@@ -14,13 +14,11 @@
 
 #include "expression.h"
 
-namespace exp {
-    class Integer: public Expression<int> {
+class IntegerExpression: public Expression{
     public:
-        Integer(int value) : Expression<int>(ExpressionType::Integer, value) {
+        IntegerExpression(int value) : Expression(ExpressionType::Integer, value) {
             
         }
-    };
-}
+};
 
 #endif

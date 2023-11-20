@@ -50,6 +50,8 @@ TextElementManager textElementManager;
 RectangleElementManager rectangleElementManager;
 ExpressionVisual expressionVisual;
 
+ExpressionManager expressionManager;
+
 //static vars
 float GameManager::windowWidth                  = window.getSize().x;
 float GameManager::windowHeight                 = window.getSize().y;
@@ -111,6 +113,13 @@ void TextTest() {
     auto finalDisplay = expressionVisual.Evaluate(root);
 
     astParser.Debug(root, 0);
+} 
+
+void ExpressionTest() {
+    IntegerExpression a(5);
+    auto po = expressionManager.AddNewControlledComponent(a);
+
+    std::cout << "Expression Value:" << std::get<int>(po->value) << '\n';
 }
 
 void PreInitializeTest() {
@@ -121,6 +130,8 @@ void PostInitializeTest() {
     EvaluateParserTest();
     ASTParserTest();
     TextTest();
+
+    ExpressionTest();
 }
 
 void Initialize() {
@@ -140,6 +151,7 @@ void Initialize() {
     astLex.Initialize(&window);
     astParser.Initialize(&window, &astLex);
     expressionVisual.Initialize(&window, &astParser, &textElementManager, &rectangleElementManager);
+    expressionManager.Initialize(&window);
 
     PostInitializeTest();
 }

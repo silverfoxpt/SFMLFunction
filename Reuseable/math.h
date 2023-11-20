@@ -18,6 +18,7 @@ class Math {
     public:
         static constexpr float Exponent = 7;
         static constexpr float FloatExponent = 0.001;
+        static constexpr float PiExp = 3.14152;
 
         static float DotProd(sf::Vector2f a, sf::Vector2f b) {
             return a.x * b.x + a.y * b.y;
@@ -151,7 +152,7 @@ class Math {
         }
 
         static float toRad(float degree) {
-            return degree * (M_PI / 180.0);
+            return degree * (PiExp / 180.0);
         }
 
         static float clamp(float start, float end, float value) {
@@ -183,7 +184,7 @@ class Math {
         static float angleBetweenVectors(const sf::Vector2f& v1, const sf::Vector2f& v2) {
             float dot = v1.x * v2.x + v1.y * v2.y;
             float det = v1.x * v2.y - v1.y * v2.x;
-            float angle = std::atan2(det, dot) * 180.0f / M_PI;
+            float angle = std::atan2(det, dot) * 180.0f / PiExp;
 
             if (angle < 0.0f) {
                 angle += 360.0f;
