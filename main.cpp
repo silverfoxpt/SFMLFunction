@@ -29,6 +29,9 @@
 #include "Text/recmanager.h"
 #include "Text/displaygroup.h"
 
+#include "Expression/expressionmanager.h"
+#include "Expression/expression.h"
+
 //really early stuff initialization
 Rand Randomize::rand;
 
