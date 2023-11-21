@@ -117,9 +117,10 @@ void TextTest() {
 
 void ExpressionTest() {
     IntegerExpression a(5);
-    auto po = expressionManager.AddNewControlledComponent(a);
+    FractionExpression b = a;
+    std::pair<int, int> value = std::get<std::pair<int, int>>(b.value);
 
-    std::cout << "Expression Value:" << std::get<int>(po->value) << '\n';
+    std::cout << value.first << " " << value.second << '\n';
 }
 
 void PreInitializeTest() {

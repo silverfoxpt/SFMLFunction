@@ -13,11 +13,17 @@
 #include <chrono>
 
 #include "expression.h"
+#include "fracexp.h"
 
 class IntegerExpression: public Expression{
     public:
         IntegerExpression(int value) : Expression(ExpressionType::Integer, value) {
             
+        }
+
+        //implicit conversion to fraction expression
+        operator FractionExpression() const {
+            return FractionExpression({std::get<int>(this->value), 1});
         }
 };
 

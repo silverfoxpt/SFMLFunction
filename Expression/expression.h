@@ -22,6 +22,7 @@ enum ExpressionType {
     ProdOp,
     PowOp,
     QuotOp,
+
     FuncOp
 };
 using ValueVariant = std::variant<int, std::pair<int, int>, std::string>;
@@ -30,10 +31,26 @@ class Expression {
     public:
         ExpressionType type;
         ValueVariant value;
+        std::vector<Expression*> subexpressions;
 
         Expression(ExpressionType type, ValueVariant value) {
             this->type = type;
             this->value = value;
+        }
+
+        void AddSubexpression(Expression* exp) {
+            if (exp == nullptr) {
+                return;
+            }
+
+            this->subexpressions.push_back(exp);
+        }
+
+        void AddSubexpression(std::vector<Expression*> exp) {
+            for (auto x: exp) {
+                if (x == nullptr) {continue;}
+                exp.push_back(x);
+            }
         }
 
         virtual ValueVariant GetValue() {
