@@ -1,5 +1,5 @@
-#ifndef H_FUNCEXP
-#define H_FUNCEXP
+#ifndef H_SYMBOLEXP
+#define H_SYMBOLEXP
 
 #include <SFML/Graphics.hpp>
 
@@ -14,9 +14,9 @@
 
 #include "expression.h"
 
-class FunctionExpression : public Expression{
+class SymbolExpression: public Expression{
     public:
-        FunctionExpression(std::string value, ExpressionType type) : Expression(type, value) {
+        SymbolExpression(std::string value) : Expression(ExpressionType::Symbol, value) {
             
         }
 };

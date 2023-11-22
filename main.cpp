@@ -103,7 +103,7 @@ void TextTest() {
     //std::string infix = "2*(-3)";
     //std::string infix = "(2/3)^(3/2)";
 
-    astParser.Reset();
+    /*astParser.Reset();
     rectangleElementManager.Reset();
     textElementManager.Reset();
 
@@ -112,7 +112,7 @@ void TextTest() {
     expressionVisual.Reset();
     auto finalDisplay = expressionVisual.Evaluate(root);
 
-    astParser.Debug(root, 0);
+    astParser.Debug(root, 0);*/
 } 
 
 void ExpressionTest() {

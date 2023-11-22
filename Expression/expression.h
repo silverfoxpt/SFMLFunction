@@ -12,8 +12,10 @@
 #include <memory>
 #include <chrono>
 #include <variant>
+#include <set>
 
 enum ExpressionType {
+    Symbol,
     Integer,
     FracOp,
 
@@ -23,7 +25,11 @@ enum ExpressionType {
     PowOp,
     QuotOp,
 
-    FuncOp
+    FuncOp,
+    Sine,
+    Cosine,
+    Tangent,
+    Cotangent
 };
 using ValueVariant = std::variant<int, std::pair<int, int>, std::string>;
 
@@ -31,25 +37,25 @@ class Expression {
     public:
         ExpressionType type;
         ValueVariant value;
-        std::vector<Expression*> subexpressions;
+        std::vector<std::weak_ptr<Expression>> subexpressions;
 
         Expression(ExpressionType type, ValueVariant value) {
             this->type = type;
             this->value = value;
         }
 
-        void AddSubexpression(Expression* exp) {
-            if (exp == nullptr) {
+        void AddSubexpression(std::weak_ptr<Expression> exp) {
+            if (exp.lock() == nullptr) {
                 return;
             }
 
             this->subexpressions.push_back(exp);
         }
 
-        void AddSubexpression(std::vector<Expression*> exp) {
+        void AddSubexpression(std::vector<std::weak_ptr<Expression>> exp) {
             for (auto x: exp) {
-                if (x == nullptr) {continue;}
-                exp.push_back(x);
+                if (x.lock() == nullptr) {continue;}
+                this->subexpressions.push_back(x);
             }
         }
 
@@ -60,6 +66,22 @@ class Expression {
         virtual ExpressionType GetType() {
             return this->type;
         }
+
+        bool isFunction() {
+            if (this->functionType.find(this->type) != this->functionType.end()) {
+                return true;
+            }
+            return false;
+        }
+
+    private:
+        std::set<ExpressionType> functionType = {
+            ExpressionType::FuncOp,
+            ExpressionType::Sine,
+            ExpressionType::Cosine,
+            ExpressionType::Tangent,
+            ExpressionType::Cotangent
+        };
 };
 
 #endif
