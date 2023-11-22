@@ -25,11 +25,13 @@ std::weak_ptr<Expression> ASTConverter::ConvertASTToExpressionTree(ASTNode* root
     if (root->children.size() == 0) { //leaf node
         if (root->type == TokenType::NUMBER) {
             std::shared_ptr<Expression> newNumber = std::make_shared<Expression>(IntegerExpression(std::stoi(root->value)));
-            this->expressionManager->AddNewControlledComponent(newNumber);
+            return this->expressionManager->AddNewControlledComponent(newNumber);
         }
         else if (root->type == TokenType::SYMBOL) {
-            //std::shared_ptr<Expression> newSymbol = std::make_shared<Expression>(IntegerExpression(std::stoi(root->value)));
-            //this->expressionManager->AddNewControlledComponent(newNumber);
+            std::shared_ptr<Expression> newSymbol = std::make_shared<Expression>(SymbolExpression(root->value));
+            return this->expressionManager->AddNewControlledComponent(newSymbol);
+        } else { //no other detected
+            return std::weak_ptr<Expression>();
         }
     }
 }
