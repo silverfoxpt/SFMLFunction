@@ -130,7 +130,16 @@ std::weak_ptr<Expression> ASTConverter::ConvertASTToExpressionTree(ASTNode* root
     }
 
     //functions down here
+    if (Token::isFunction(root->type)) {
+        auto first = this->ConvertASTToExpressionTree(root->children[0]);
 
+        FunctionExpression exp(root->value, this->convertTypeFunction[root->type]);
+        exp.AddSubexpression(first);
+
+        return this->expressionManager->AddNewControlledComponent(
+            std::static_pointer_cast<Expression>(std::make_shared<FunctionExpression>(exp))
+        );
+    }
 
     return std::weak_ptr<Expression>();
 }

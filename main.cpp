@@ -129,7 +129,7 @@ void ExpressionTest() {
         std::cout << val.first << " " << val.second << '\n';
     }*/
 
-    std::string infix = "a/b^3-2";
+    std::string infix = "\\sin{a}/b^3-2";
     astParser.Reset();
     ASTNode* root = astParser.Parse(infix);
 

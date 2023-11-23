@@ -52,7 +52,12 @@ class ASTConverter: Monobehaviour<sf::RenderWindow*, ASTParser*, ExpressionManag
         }
 
     private:
-        
+        std::map<TokenType, ExpressionType> convertTypeFunction = {
+            {TokenType::COSINE, ExpressionType::Cosine},
+            {TokenType::SINE, ExpressionType::Sine},
+            {TokenType::COTANGENT, ExpressionType::Cotangent},
+            {TokenType::TANGENT, ExpressionType::Tangent}
+        };
 };
 
 #endif
