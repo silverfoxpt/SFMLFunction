@@ -74,6 +74,10 @@ class Expression {
             return false;
         }
 
+        virtual std::string GetDescription() {
+            return "<GenericExpression>";
+        }
+
     private:
         std::set<ExpressionType> functionType = {
             ExpressionType::FuncOp,

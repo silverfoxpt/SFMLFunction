@@ -31,6 +31,7 @@
 
 #include "Expression/expressionmanager.h"
 #include "Expression/expression.h"
+#include "Expression/astconvert.h"
 
 //really early stuff initialization
 Rand Randomize::rand;
@@ -51,6 +52,7 @@ RectangleElementManager rectangleElementManager;
 ExpressionVisual expressionVisual;
 
 ExpressionManager expressionManager;
+ASTConverter astConverter;
 
 //static vars
 float GameManager::windowWidth                  = window.getSize().x;
@@ -116,7 +118,7 @@ void TextTest() {
 } 
 
 void ExpressionTest() {
-    IntegerExpression a(5);
+    /*IntegerExpression a(5);
     FractionExpression b = a;
 
     auto tester = expressionManager.AddNewControlledComponent(std::make_shared<Expression>(b));
@@ -125,6 +127,15 @@ void ExpressionTest() {
         std::pair<int, int> val = std::get<std::pair<int, int>>(value);
 
         std::cout << val.first << " " << val.second << '\n';
+    }*/
+
+    std::string infix = "a/b^3-2";
+    astParser.Reset();
+    ASTNode* root = astParser.Parse(infix);
+
+    auto rootExp = astConverter.ConvertASTToExpressionTree(root);
+    if (auto pt = rootExp.lock()) {
+        ASTConverter::Debug(rootExp, 0);
     }
 }
 
@@ -158,6 +169,8 @@ void Initialize() {
     astParser.Initialize(&window, &astLex);
     expressionVisual.Initialize(&window, &astParser, &textElementManager, &rectangleElementManager);
     expressionManager.Initialize(&window);
+
+    astConverter.Initialize(&window, &astParser, &expressionManager);
 
     PostInitializeTest();
 }

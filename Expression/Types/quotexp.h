@@ -12,12 +12,16 @@
 #include <memory>
 #include <chrono>
 
-#include "expression.h"
+#include "../expression.h"
 
 class QuotientExpression : public Expression{
     public:
         QuotientExpression(std::string value) : Expression(ExpressionType::QuotOp, value) {
             
+        }
+
+        std::string GetDescription() override {
+            return "<QuotientExpression / >";
         }
 };
 

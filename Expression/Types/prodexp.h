@@ -12,12 +12,16 @@
 #include <memory>
 #include <chrono>
 
-#include "expression.h"
+#include "../expression.h"
 
 class ProductExpression : public Expression{
     public:
         ProductExpression(std::string value) : Expression(ExpressionType::ProdOp, value) {
             
+        }
+
+        std::string GetDescription() override {
+            return "<Product Expression * >";
         }
 };
 

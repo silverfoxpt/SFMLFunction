@@ -12,12 +12,17 @@
 #include <memory>
 #include <chrono>
 
-#include "expression.h"
+#include "../expression.h"
 
 class FractionExpression: public Expression{
     public:
         FractionExpression(std::pair<int, int> value) : Expression(ExpressionType::FracOp, value) {
             
+        }
+
+        std::string GetDescription() override {
+            std::pair<int, int> val = std::get<std::pair<int, int>>(this->GetValue());
+            return "<FractionExpression " + std::to_string(val.first) + "/" + std::to_string(val.second) + " >"; 
         }
 };
 

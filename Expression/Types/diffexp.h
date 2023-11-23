@@ -12,12 +12,16 @@
 #include <memory>
 #include <chrono>
 
-#include "expression.h"
+#include "../expression.h"
 
 class DifferenceExpression: public Expression{
     public:
         DifferenceExpression(std::string value) : Expression(ExpressionType::DiffOp, value) {
             
+        }
+
+        std::string GetDescription() override {
+            return "<DifferenceExpression - >";
         }
 };
 

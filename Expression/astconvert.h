@@ -16,14 +16,14 @@
 #include "../Pratt/astparser.h"
 #include "../Reuseable/templateclass.h"
 
-#include "integerexp.h"
-#include "quotexp.h"
-#include "sumexp.h"
-#include "diffexp.h"
-#include "prodexp.h"
-#include "powexp.h"
-#include "funcexp.h"
-#include "symbolexp.h"
+#include "Types/integerexp.h"
+#include "Types/quotexp.h"
+#include "Types/sumexp.h"
+#include "Types/diffexp.h"
+#include "Types/prodexp.h"
+#include "Types/powexp.h"
+#include "Types/funcexp.h"
+#include "Types/symbolexp.h"
 
 
 class ASTConverter: Monobehaviour<sf::RenderWindow*, ASTParser*, ExpressionManager*> {
@@ -39,6 +39,17 @@ class ASTConverter: Monobehaviour<sf::RenderWindow*, ASTParser*, ExpressionManag
         void Reset() override;
 
         std::weak_ptr<Expression> ConvertASTToExpressionTree(ASTNode* root);
+
+        static void Debug(std::weak_ptr<Expression> root, int level) {
+            if (auto pt = root.lock()) {
+                for (int i = 1; i <= level; i++) {std::cout << "  ";}
+                std::cout << pt.get()->GetDescription() << '\n';
+
+                for (auto child: pt.get()->subexpressions) {
+                    Debug(child, level+1);
+                }
+            }
+        }
 
     private:
         

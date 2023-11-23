@@ -12,12 +12,16 @@
 #include <memory>
 #include <chrono>
 
-#include "expression.h"
+#include "../expression.h"
 
 class FunctionExpression : public Expression{
     public:
         FunctionExpression(std::string value, ExpressionType type) : Expression(type, value) {
             
+        }
+
+        std::string GetDescription() override {
+            return "<FunctionExpression " + std::get<std::string>(this->GetValue()) + " >";
         }
 };
 

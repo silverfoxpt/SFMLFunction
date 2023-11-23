@@ -12,12 +12,16 @@
 #include <memory>
 #include <chrono>
 
-#include "expression.h"
+#include "../expression.h"
 
 class SumExpression: public Expression{
     public:
         SumExpression(std::string value) : Expression(ExpressionType::SumOp, value) {
             
+        }
+
+        std::string GetDescription() override {
+            return "<SumExpression + >";
         }
 };
 
