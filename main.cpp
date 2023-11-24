@@ -129,11 +129,18 @@ void ExpressionTest() {
         std::cout << val.first << " " << val.second << '\n';
     }*/
 
-    std::string infix = "\\sin{a}/b^3-2";
+    std::string infix = "a*b*c+x*y*z-b*c*(a+b+c*a*b+m)";
     astParser.Reset();
     ASTNode* root = astParser.Parse(infix);
 
     auto rootExp = astConverter.ConvertASTToExpressionTree(root);
+    if (auto pt = rootExp.lock()) {
+        ASTConverter::Debug(rootExp, 0);
+    }
+
+    std::cout << "\n" << "Flatten:\n";
+    astConverter.FlattenProductExpressionTree(rootExp);
+    astConverter.FlattenSumExpressionTree(rootExp);
     if (auto pt = rootExp.lock()) {
         ASTConverter::Debug(rootExp, 0);
     }

@@ -39,17 +39,10 @@ class ASTConverter: Monobehaviour<sf::RenderWindow*, ASTParser*, ExpressionManag
         void Reset() override;
 
         std::weak_ptr<Expression> ConvertASTToExpressionTree(ASTNode* root);
+        std::vector<std::weak_ptr<Expression>> FlattenProductExpressionTree(std::weak_ptr<Expression> root);
+        std::vector<std::weak_ptr<Expression>> FlattenSumExpressionTree(std::weak_ptr<Expression> root);
 
-        static void Debug(std::weak_ptr<Expression> root, int level) {
-            if (auto pt = root.lock()) {
-                for (int i = 1; i <= level; i++) {std::cout << "  ";}
-                std::cout << pt.get()->GetDescription() << '\n';
-
-                for (auto child: pt.get()->subexpressions) {
-                    Debug(child, level+1);
-                }
-            }
-        }
+        static void Debug(std::weak_ptr<Expression> root, int level);
 
     private:
         std::map<TokenType, ExpressionType> convertTypeFunction = {

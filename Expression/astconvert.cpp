@@ -143,3 +143,64 @@ std::weak_ptr<Expression> ASTConverter::ConvertASTToExpressionTree(ASTNode* root
 
     return std::weak_ptr<Expression>();
 }
+
+std::vector<std::weak_ptr<Expression>> ASTConverter::FlattenProductExpressionTree(std::weak_ptr<Expression> root) {
+    if (auto pt = root.lock()) {
+        if (pt.get()->GetType() != ExpressionType::ProdOp) { //not a Product tree
+            for (auto child: pt.get()->subexpressions) {
+                this->FlattenProductExpressionTree(child);
+            }
+            return {root};
+        }
+
+        std::vector<std::weak_ptr<Expression>> newSubexpressions; newSubexpressions.reserve(100); //safety i guess?
+        for (auto child: pt.get()->subexpressions) {
+            auto childSub = this->FlattenProductExpressionTree(child);
+            for (auto exp: childSub) {
+                newSubexpressions.push_back(exp);
+            }
+        }
+
+        pt.get()->subexpressions = newSubexpressions;
+        return newSubexpressions;
+    }
+
+    std::cerr << "Invalid/Deallocated Tree Found - FlattenProductExpressionTree" << '\n';
+    return {root};
+}   
+
+std::vector<std::weak_ptr<Expression>> ASTConverter::FlattenSumExpressionTree(std::weak_ptr<Expression> root) {
+    if (auto pt = root.lock()) {
+        if (pt.get()->GetType() != ExpressionType::SumOp) { //not a Sum tree
+            for (auto child: pt.get()->subexpressions) {
+                this->FlattenSumExpressionTree(child);
+            }
+            return {root};
+        }
+
+        std::vector<std::weak_ptr<Expression>> newSubexpressions; newSubexpressions.reserve(100); //safety i guess?
+        for (auto child: pt.get()->subexpressions) {
+            auto childSub = this->FlattenSumExpressionTree(child);
+            for (auto exp: childSub) {
+                newSubexpressions.push_back(exp);
+            }
+        }
+
+        pt.get()->subexpressions = newSubexpressions;
+        return newSubexpressions;
+    }
+
+    std::cerr << "Invalid/Deallocated Tree Found - FlattenSumExpressionTree" << '\n';
+    return {root};
+}
+
+void ASTConverter::Debug(std::weak_ptr<Expression> root, int level)  {
+    if (auto pt = root.lock()) {
+        for (int i = 1; i <= level; i++) {std::cout << "  ";}
+        std::cout << pt.get()->GetDescription() << '\n';
+
+        for (auto child: pt.get()->subexpressions) {
+            Debug(child, level+1);
+        }
+    }
+}
