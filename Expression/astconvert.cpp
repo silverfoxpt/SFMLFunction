@@ -23,15 +23,18 @@ void ASTConverter::Reset() {
 
 std::weak_ptr<Expression> ASTConverter::ConvertASTToExpressionTree(ASTNode* root) {
     if (root->type == TokenType::NUMBER) {
-        std::shared_ptr<IntegerExpression> tmp = std::make_shared<IntegerExpression>(IntegerExpression(std::stoi(root->value)));
-        std::shared_ptr<Expression> newNumber = std::static_pointer_cast<Expression>(tmp);
-        return this->expressionManager->AddNewControlledComponent(newNumber);
+        //std::shared_ptr<IntegerExpression> tmp = std::make_shared<IntegerExpression>(IntegerExpression(std::stoi(root->value)));
+        //std::shared_ptr<Expression> newNumber = std::static_pointer_cast<Expression>(tmp);
+        //return this->expressionManager->AddNewControlledComponent(newNumber);
+        return this->expressionManager->AddConvertibleExpression(IntegerExpression(std::stoi(root->value)));
     }
     
     if (root->type == TokenType::SYMBOL) {
-        std::shared_ptr<SymbolExpression> tmp = std::make_shared<SymbolExpression>(SymbolExpression(root->value));
-        std::shared_ptr<Expression> newSymbol = std::static_pointer_cast<Expression>(tmp);
-        return this->expressionManager->AddNewControlledComponent(newSymbol);
+        //std::shared_ptr<SymbolExpression> tmp = std::make_shared<SymbolExpression>(SymbolExpression(root->value));
+        //std::shared_ptr<Expression> newSymbol = std::static_pointer_cast<Expression>(tmp);
+        //return this->expressionManager->AddNewControlledComponent(newSymbol);
+
+        return this->expressionManager->AddConvertibleExpression(SymbolExpression(root->value));
     } 
 
     if (root->type == TokenType::ADDITION) {

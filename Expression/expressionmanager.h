@@ -47,6 +47,18 @@ class ExpressionManager : Monobehaviour<sf::RenderWindow*> {
             std::weak_ptr<Expression> observer = this->controlledComponents[idx];
             return observer;
         }
+
+        //helper functions
+        template <typename T>
+        std::weak_ptr<Expression> AddConvertibleExpression(T exp) {
+            try {
+                auto pt = this->AddNewControlledComponent(std::static_pointer_cast<Expression>(std::make_shared<T>(exp)));
+                return pt;
+            } catch(const std::exception& e) {
+                std::cerr << "Class cannot be convert to generic Expression type. Please recheck!";
+                throw new std::bad_cast();
+            }
+        }
 };
 
 #endif

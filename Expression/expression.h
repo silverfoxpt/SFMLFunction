@@ -29,7 +29,9 @@ enum ExpressionType {
     Sine,
     Cosine,
     Tangent,
-    Cotangent
+    Cotangent,
+
+    Undefined
 };
 using ValueVariant = std::variant<int, std::pair<int, int>, std::string>;
 

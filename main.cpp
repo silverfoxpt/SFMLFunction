@@ -32,6 +32,7 @@
 #include "Expression/expressionmanager.h"
 #include "Expression/expression.h"
 #include "Expression/astconvert.h"
+#include "Expression/simplifyrational.h"
 
 //really early stuff initialization
 Rand Randomize::rand;
@@ -129,7 +130,7 @@ void ExpressionTest() {
         std::cout << val.first << " " << val.second << '\n';
     }*/
 
-    std::string infix = "a*b*c+x*y*z-b*c*(a+b+c*a*b+m)";
+    std::string infix = "a*b*c+x*y*z-b*c*(a+b+c*a*b+a)";
     astParser.Reset();
     ASTNode* root = astParser.Parse(infix);
 
@@ -146,6 +147,10 @@ void ExpressionTest() {
     }
 }
 
+void RandomValueTest() {
+
+}
+
 void PreInitializeTest() {
     //DO NOT PUT SHIT IN HERE UNLESS YOU'RE SURE THEY RUN BEFORE INITIALIZATION HAPPENS
 }
@@ -156,6 +161,7 @@ void PostInitializeTest() {
     TextTest();
 
     ExpressionTest();
+    RandomValueTest();
 }
 
 void Initialize() {
