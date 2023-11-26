@@ -55,3 +55,123 @@ int SimplifyRational::gcd(int a, int b) {
     if (b == 0) {return a;}
     return this->gcd(b, a % b);
 }
+
+std::weak_ptr<Expression> SimplifyRational::SimpilfyRNE(std::weak_ptr<Expression> u) {
+    auto v = this->SimpilfyRNERec(u);
+    if(auto pt = v.lock()) {
+        if (pt.get()->GetType() == ExpressionType::Undefined) {
+            return v;
+        }
+        return this->SimplifyRationalNumber(v);
+    }
+
+    return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+}
+
+std::weak_ptr<Expression> SimplifyRational::SimpilfyRNERec(std::weak_ptr<Expression> u) {
+    if (auto pt = u.lock()) {
+        ExpressionType type = pt.get()->GetType();
+        ValueVariant value = pt.get()->GetValue();
+
+        if (type == ExpressionType::Undefined) {
+            return u;
+        }
+
+        if (type == ExpressionType::Integer) {
+            return u;
+        }
+
+        if (type == ExpressionType::FracOp) {
+            return this->SimplifyRationalNumber(u);
+        }
+
+        if (type == ExpressionType::SumOp || type == ExpressionType::ProdOp) {
+            std::weak_ptr<Expression> v = this->SimpilfyRNERec(pt.get()->subexpressions[0]);
+            std::weak_ptr<Expression> w;
+            int numOp = pt.get()->subexpressions.size();
+
+            for (int i = 1; i < numOp; i++) {
+                std::weak_ptr<Expression> w = this->SimpilfyRNERec(pt.get()->subexpressions[i]);
+                auto v1 = v.lock();
+                auto w1 = w.lock();
+
+                if (v1 && w1) {
+                    if (v1.get()->GetType() == ExpressionType::Undefined || w1.get()->GetType() == ExpressionType::Undefined) {
+                        return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+                    }
+
+                    else if (type == ExpressionType::SumOp) {
+                        v = this->EvaluateSum(v, w);
+                    }
+
+                    else if (type == ExpressionType::ProdOp) {
+                        v = this->EvaluateProduct(v, w);
+                    }
+                } 
+            }
+
+            return this->SimplifyRationalNumber(v);
+        }
+
+        if (type == ExpressionType::PowOp) {
+            std::weak_ptr<Expression> v = this->SimpilfyRNERec(pt.get()->subexpressions[0]);
+            std::weak_ptr<Expression> w = this->SimpilfyRNERec(pt.get()->subexpressions[1]);
+
+            return this->EvaluatePower(v, w);
+        }
+
+        return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+    }
+
+    return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+}
+
+std::weak_ptr<Expression> SimplifyRational::EvaluateSum(const std::weak_ptr<Expression> u, const std::weak_ptr<Expression> v) {
+    auto u1 = u.lock();
+    auto v1 = v.lock();
+
+    if (u1 && v1) {
+        std::pair<int, int> value1, value2;
+
+        if (u1.get()->GetType() == ExpressionType::FracOp) {
+            value1 = std::get<std::pair<int, int>>(u1.get()->GetValue());
+        } else {
+            value1 = {std::get<int>(u1.get()->GetValue()), 1};
+        }
+
+        if (v1.get()->GetType() == ExpressionType::FracOp) {
+            value2 = std::get<std::pair<int, int>>(v1.get()->GetValue());
+        } else {
+            value2 = {std::get<int>(v1.get()->GetValue()), 1};
+        }
+
+        return this->expressionManager->AddConvertibleExpression(
+            FractionExpression({value1.first * value2.second + value2.first * value1.second, value1.second * value2.second})
+        );
+    }
+}
+
+std::weak_ptr<Expression> SimplifyRational::EvaluateProduct(const std::weak_ptr<Expression> u, const std::weak_ptr<Expression> v) {
+    auto u1 = u.lock();
+    auto v1 = v.lock();
+
+    if (u1 && v1) {
+        std::pair<int, int> value1, value2;
+
+        if (u1.get()->GetType() == ExpressionType::FracOp) {
+            value1 = std::get<std::pair<int, int>>(u1.get()->GetValue());
+        } else {
+            value1 = {std::get<int>(u1.get()->GetValue()), 1};
+        }
+
+        if (v1.get()->GetType() == ExpressionType::FracOp) {
+            value2 = std::get<std::pair<int, int>>(v1.get()->GetValue());
+        } else {
+            value2 = {std::get<int>(v1.get()->GetValue()), 1};
+        }
+
+        return this->expressionManager->AddConvertibleExpression(
+            FractionExpression({value1.first * value2.first, value1.second * value2.second})
+        );
+    }
+}

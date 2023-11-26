@@ -54,6 +54,7 @@ ExpressionVisual expressionVisual;
 
 ExpressionManager expressionManager;
 ASTConverter astConverter;
+SimplifyRational simplifyRational;
 
 //static vars
 float GameManager::windowWidth                  = window.getSize().x;
@@ -119,6 +120,7 @@ void TextTest() {
 } 
 
 void ExpressionTest() {
+    //passed
     /*IntegerExpression a(5);
     FractionExpression b = a;
 
@@ -130,7 +132,43 @@ void ExpressionTest() {
         std::cout << val.first << " " << val.second << '\n';
     }*/
 
-    std::string infix = "a*b*c+x*y*z-b*c*(a+b+c*a*b+a)";
+    //passed
+    /*std::string infix = "a*b*c+x*y*z-b*c*(a+b+c*a*b+a)";
+    astParser.Reset();
+    ASTNode* root = astParser.Parse(infix);
+
+    auto rootExp = astConverter.ConvertASTToExpressionTree(root);
+    if (auto pt = rootExp.lock()) {
+        ASTConverter::Debug(rootExp, 0);
+    }
+
+    std::cout << "\n" << "Flatten:\n";
+    astConverter.FlattenProductExpressionTree(rootExp);
+    astConverter.FlattenSumExpressionTree(rootExp);
+    if (auto pt = rootExp.lock()) {
+        ASTConverter::Debug(rootExp, 0);
+    }*/
+}
+
+void RandomValueTest() {
+    //passed
+    /*FractionExpression a({20, 0});
+    auto pt = expressionManager.AddConvertibleExpression(a);
+    auto ret = simplifyRational.SimplifyRationalNumber(pt);
+
+    if (auto newPt = ret.lock()) {
+        if (newPt.get()->GetType() == ExpressionType::FracOp) {
+            std::pair<int, int> val = std::get<std::pair<int, int>>(newPt.get()->GetValue());
+            std::cout << "TESTVAL: " << val.first << " " << val.second << '\n';
+        } else if (newPt.get()->GetType() == ExpressionType::Undefined) {
+            std::cout << "TESTVAL: Undefined" << '\n';
+        } else {
+            int val = std::get<int>(newPt.get()->GetValue());
+            std::cout << "TESTVAL: " << val << '\n';
+        }
+    }*/
+
+    std::string infix = "1/2+3/4";
     astParser.Reset();
     ASTNode* root = astParser.Parse(infix);
 
@@ -145,10 +183,19 @@ void ExpressionTest() {
     if (auto pt = rootExp.lock()) {
         ASTConverter::Debug(rootExp, 0);
     }
-}
 
-void RandomValueTest() {
-
+    auto val = simplifyRational.SimpilfyRNE(rootExp);
+    if (auto newPt = val.lock()) {
+        if (newPt.get()->GetType() == ExpressionType::FracOp) {
+            std::pair<int, int> val = std::get<std::pair<int, int>>(newPt.get()->GetValue());
+            std::cout << "TESTVAL: " << val.first << " " << val.second << '\n';
+        } else if (newPt.get()->GetType() == ExpressionType::Undefined) {
+            std::cout << "TESTVAL: Undefined" << '\n';
+        } else {
+            int val = std::get<int>(newPt.get()->GetValue());
+            std::cout << "TESTVAL: " << val << '\n';
+        }
+    }
 }
 
 void PreInitializeTest() {
@@ -182,6 +229,7 @@ void Initialize() {
     astParser.Initialize(&window, &astLex);
     expressionVisual.Initialize(&window, &astParser, &textElementManager, &rectangleElementManager);
     expressionManager.Initialize(&window);
+    simplifyRational.Initialize(&window, &expressionManager);
 
     astConverter.Initialize(&window, &astParser, &expressionManager);
 

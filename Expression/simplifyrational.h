@@ -33,6 +33,16 @@ class SimplifyRational: Monobehaviour<sf::RenderWindow*, ExpressionManager*> {
         void Reset() override;
 
         std::weak_ptr<Expression> SimplifyRationalNumber(std::weak_ptr<Expression> rational);
+        std::weak_ptr<Expression> SimpilfyRNE(std::weak_ptr<Expression> u);
+        std::weak_ptr<Expression> SimpilfyRNERec(std::weak_ptr<Expression> u);
+
+        //helper
+        std::weak_ptr<Expression> EvaluateSum(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
+        std::weak_ptr<Expression> EvaluateProduct(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
+        std::weak_ptr<Expression> EvaluatePower(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
+
+        int Compare(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
+        int Compare(std::weak_ptr<Expression> u, float val);
 
     private:
         int gcd(int a, int b);
