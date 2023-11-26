@@ -176,6 +176,12 @@ std::weak_ptr<Expression> SimplifyRational::EvaluateProduct(const std::weak_ptr<
     }
 }
 
+std::weak_ptr<Expression> SimplifyRational::EvaluatePower(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v) {
+    return u;
+}
+
+//comparison functions down there! Careful!
+
 int SimplifyRational::Compare(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v) {
     auto u1 = u.lock();
     auto v1 = v.lock();
@@ -196,6 +202,7 @@ int SimplifyRational::Compare(std::weak_ptr<Expression> u, std::weak_ptr<Express
         } else if (v1.get()->GetType() == ExpressionType::Integer) {
             value2 = {std::get<int>(v1.get()->GetValue()), 1};
         } else {
+            throw std::invalid_argument("Compare type not Fraction or Integer!");
         }
 
         int comper = (value1.first * value2.second - value2.first * value1.second);
@@ -206,6 +213,7 @@ int SimplifyRational::Compare(std::weak_ptr<Expression> u, std::weak_ptr<Express
 }
 
 //unsafe for a CAS - but it works ¯\_(ツ)_/¯ 
+//probably use for integer comparison mostly. Pray god it works
 int SimplifyRational::Compare(std::weak_ptr<Expression> u, float val) {
     auto u1 = u.lock();
     if (u1) {
@@ -219,7 +227,8 @@ int SimplifyRational::Compare(std::weak_ptr<Expression> u, float val) {
             throw std::invalid_argument("Compare type not Fraction or Integer!");
         }
 
-        float other = value1.first / value1.second;
+        float other = (float) value1.first / value1.second;
+
         if (std::abs(other - val) <= this->exp) {return 0;} //u = val
         else if (other < val) {return -1;} //u < val
         else {return 1;} //u > val
