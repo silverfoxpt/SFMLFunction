@@ -177,11 +177,52 @@ std::weak_ptr<Expression> SimplifyRational::EvaluateProduct(const std::weak_ptr<
 }
 
 std::weak_ptr<Expression> SimplifyRational::EvaluatePower(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v) {
-    return u;
+    auto u1 = u.lock();
+    auto v1 = v.lock();
+
+    //calculate u ^ v
+    if (u1 && v1) {
+        if (v1.get()->GetType() != ExpressionType::Integer) {
+            return this->expressionManager->AddConvertibleExpression(UndefinedExpression()); //we don't deal with roots here
+        }
+
+        int up = std::get<int>(v1.get()->GetValue());
+
+        std::pair<int, int> val;
+        if (u1.get()->GetType() == ExpressionType::FracOp) {
+            val = std::get<std::pair<int, int>>(u1.get()->GetValue());
+        } else {
+            val = {std::get<int>(u1.get()->GetValue()), 1};
+        }
+
+        if (val.first == 0) {
+            if (up >= 1) {
+                return this->expressionManager->AddConvertibleExpression(IntegerExpression(0)); //0 ^ x = 0
+            } 
+            else if (up <= 0) {
+                return this->expressionManager->AddConvertibleExpression(UndefinedExpression()); //x / 0 = Undefined
+            } 
+        } 
+        
+        else {
+            if (up > 0) {
+                int nume = std::pow(val.first, up);
+                int deno = std::pow(val.second, up);
+                return this->expressionManager->AddConvertibleExpression(FractionExpression({nume, deno}));
+            } else if (up == 0) {
+                return this->expressionManager->AddConvertibleExpression(IntegerExpression(1)); //x ^ 0 = 1
+            } else {
+                int nume = std::pow(val.first, -up);
+                int deno = std::pow(val.second, -up);
+                return this->expressionManager->AddConvertibleExpression(FractionExpression({deno, nume})); // a ^ -b = 1 / (a^b)
+            }
+        }
+    }
+
+    return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
 }
 
 //comparison functions down there! Careful!
-
 int SimplifyRational::Compare(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v) {
     auto u1 = u.lock();
     auto v1 = v.lock();
