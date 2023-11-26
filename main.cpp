@@ -184,7 +184,7 @@ void RandomValueTest() {
         ASTConverter::Debug(rootExp, 0);
     }
 
-    auto val = simplifyRational.SimpilfyRNE(rootExp);
+    /*auto val = simplifyRational.SimpilfyRNE(rootExp);
     if (auto newPt = val.lock()) {
         if (newPt.get()->GetType() == ExpressionType::FracOp) {
             std::pair<int, int> val = std::get<std::pair<int, int>>(newPt.get()->GetValue());
@@ -195,7 +195,11 @@ void RandomValueTest() {
             int val = std::get<int>(newPt.get()->GetValue());
             std::cout << "TESTVAL: " << val << '\n';
         }
-    }
+    }*/
+
+    //comparison test - passed
+    auto t1 = expressionManager.AddConvertibleExpression(FractionExpression({1, 2}));
+    std::cout << "TEST COMP: " << simplifyRational.Compare(t1, 0.5) << '\n';
 }
 
 void PreInitializeTest() {
