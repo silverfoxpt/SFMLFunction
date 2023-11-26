@@ -46,6 +46,7 @@ class SimplifyRational: Monobehaviour<sf::RenderWindow*, ExpressionManager*> {
 
     private:
         int gcd(int a, int b);
+        float exp = 0.00001;
 };
 
 #endif

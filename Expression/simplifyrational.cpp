@@ -175,3 +175,53 @@ std::weak_ptr<Expression> SimplifyRational::EvaluateProduct(const std::weak_ptr<
         );
     }
 }
+
+int SimplifyRational::Compare(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v) {
+    auto u1 = u.lock();
+    auto v1 = v.lock();
+
+    if (u1 && v1) {
+        std::pair<int, int> value1, value2;
+
+        if (u1.get()->GetType() == ExpressionType::FracOp) {
+            value1 = std::get<std::pair<int, int>>(u1.get()->GetValue());
+        } else if (u1.get()->GetType() == ExpressionType::Integer) {
+            value1 = {std::get<int>(u1.get()->GetValue()), 1};
+        } else {
+            throw std::invalid_argument("Compare type not Fraction or Integer!");
+        }
+
+        if (v1.get()->GetType() == ExpressionType::FracOp) {
+            value2 = std::get<std::pair<int, int>>(v1.get()->GetValue());
+        } else if (v1.get()->GetType() == ExpressionType::Integer) {
+            value2 = {std::get<int>(v1.get()->GetValue()), 1};
+        } else {
+        }
+
+        int comper = (value1.first * value2.second - value2.first * value1.second);
+        if (comper < 0) {return -1;} //u1 < v1
+        else if (comper > 0) {return 1;} //u1 > v1
+        else {return 0;} //u1 = v1
+    }
+}
+
+//unsafe for a CAS - but it works ¯\_(ツ)_/¯ 
+int SimplifyRational::Compare(std::weak_ptr<Expression> u, float val) {
+    auto u1 = u.lock();
+    if (u1) {
+        std::pair<int, int> value1;
+
+        if (u1.get()->GetType() == ExpressionType::FracOp) {
+            value1 = std::get<std::pair<int, int>>(u1.get()->GetValue());
+        } else if (u1.get()->GetType() == ExpressionType::Integer) {
+            value1 = {std::get<int>(u1.get()->GetValue()), 1};
+        } else {
+            throw std::invalid_argument("Compare type not Fraction or Integer!");
+        }
+
+        float other = value1.first / value1.second;
+        if (std::abs(other - val) <= this->exp) {return 0;} //u = val
+        else if (other < val) {return -1;} //u < val
+        else {return 1;} //u > val
+    }
+}
