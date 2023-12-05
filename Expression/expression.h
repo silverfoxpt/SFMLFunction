@@ -76,6 +76,13 @@ class Expression {
             return false;
         }
 
+        bool isConstant() {
+            if (this->type == ExpressionType::Integer || this->type == ExpressionType::FracOp) {
+                return true;
+            }
+            return false;
+        }
+
         virtual std::string GetDescription() {
             return "<GenericExpression>";
         }

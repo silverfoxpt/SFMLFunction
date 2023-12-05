@@ -251,6 +251,9 @@ int SimplifyRational::Compare(std::weak_ptr<Expression> u, std::weak_ptr<Express
         else if (comper > 0) {return 1;} //u1 > v1
         else {return 0;} //u1 = v1
     }
+
+    std::cerr << "Compare failed!\n";
+    return -1;
 }
 
 //unsafe for a CAS - but it works ¯\_(ツ)_/¯ 
@@ -274,4 +277,7 @@ int SimplifyRational::Compare(std::weak_ptr<Expression> u, float val) {
         else if (other < val) {return -1;} //u < val
         else {return 1;} //u > val
     }
+
+    std::cerr << "Compare failed!\n";
+    return -1;
 }

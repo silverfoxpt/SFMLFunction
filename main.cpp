@@ -33,6 +33,7 @@
 #include "Expression/expression.h"
 #include "Expression/astconvert.h"
 #include "Expression/simplifyrational.h"
+#include "Expression/sorter.h"
 
 //really early stuff initialization
 Rand Randomize::rand;
@@ -55,6 +56,7 @@ ExpressionVisual expressionVisual;
 ExpressionManager expressionManager;
 ASTConverter astConverter;
 SimplifyRational simplifyRational;
+ExpressionSorter expressionSorter;
 
 //static vars
 float GameManager::windowWidth                  = window.getSize().x;
@@ -168,13 +170,14 @@ void RandomValueTest() {
         }
     }*/
 
-    std::string infix = "1/2+2/3+3/4";
+    //RNE - Rational Number Evaluation - value test - success
+    /*std::string infix = "1/2+2/3+3/4";
     astParser.Reset();
     ASTNode* root = astParser.Parse(infix);
 
     auto rootExp = astConverter.ConvertASTToExpressionTree(root);
     if (auto pt = rootExp.lock()) {
-        ASTConverter::Debug(rootExp, 0);
+        //ASTConverter::Debug(rootExp, 0);
     }
 
     std::cout << "\n" << "Flatten:\n";
@@ -195,11 +198,52 @@ void RandomValueTest() {
             int val = std::get<int>(newPt.get()->GetValue());
             std::cout << "TESTVAL: " << val << '\n';
         }
-    }
+    }*/
 
     //comparison test - passed
     //auto t1 = expressionManager.AddConvertibleExpression(FractionExpression({1, 2}));
     //std::cout << "TEST COMP: " << simplifyRational.Compare(t1, 0.5) << '\n';
+}
+
+void TermConstTest() {
+    /*std::string infix = "(2+3)";
+    astParser.Reset();
+    ASTNode* root = astParser.Parse(infix);
+
+    std::cout << "All:\n";
+    auto rootExp = astConverter.ConvertASTToExpressionTree(root);
+    astConverter.FlattenProductExpressionTree(rootExp);
+    astConverter.FlattenSumExpressionTree(rootExp);
+
+    if (auto pt = rootExp.lock()) {
+        ASTConverter::Debug(rootExp, 0);
+    }*/
+    
+    //power test - passed
+    /*std::cout << "Base:\n";
+    auto base = expressionSorter.Base(rootExp);
+    if (auto pt = base.lock()) {
+        ASTConverter::Debug(base, 0);
+    }
+
+    std::cout << "Exponent:\n";
+    auto expon = expressionSorter.Exponent(rootExp);
+    if (auto pt = base.lock()) {
+        ASTConverter::Debug(expon, 0);
+    }*/
+
+    //product term-const test - Passed
+    /*std::cout << "Const:\n";
+    auto base = expressionSorter.Constant(rootExp);
+    if (auto pt = base.lock()) {
+        ASTConverter::Debug(base, 0);
+    }
+
+    std::cout << "Terms:\n";
+    auto expon = expressionSorter.Term(rootExp);
+    if (auto pt = base.lock()) {
+        ASTConverter::Debug(expon, 0);
+    }*/
 }
 
 void PreInitializeTest() {
@@ -213,6 +257,7 @@ void PostInitializeTest() {
 
     ExpressionTest();
     RandomValueTest();
+    TermConstTest();
 }
 
 void Initialize() {
@@ -236,6 +281,7 @@ void Initialize() {
     simplifyRational.Initialize(&window, &expressionManager);
 
     astConverter.Initialize(&window, &astParser, &expressionManager);
+    expressionSorter.Initialize(&window, &expressionManager);
 
     PostInitializeTest();
 }
