@@ -122,3 +122,63 @@ std::weak_ptr<Expression> ExpressionSorter::Constant(std::weak_ptr<Expression> u
 
     return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
 }
+
+bool ExpressionSorter::OrderRelation(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v) {
+
+}
+
+bool ExpressionSorter::Equal(const std::weak_ptr<Expression> u, const std::weak_ptr<Expression> v) {
+    auto p1 = u.lock();
+    auto p2 = v.lock();
+
+    if (p1 && p2) {
+        auto type1 = p1.get()->GetType();
+        auto type2 = p2.get()->GetType();
+
+        if (type1 != type2) {
+            return false;
+        }
+
+        if (type1 == ExpressionType::Undefined) {
+            return true;
+        }
+
+        if (type1 == ExpressionType::Integer) {
+            auto val1 = std::get<int>(p1.get()->GetValue());
+            auto val2 = std::get<int>(p2.get()->GetValue());
+
+            return val1 == val2;
+        }
+
+        if (type1 == ExpressionType::Symbol) {
+            auto val1 = std::get<std::string>(p1.get()->GetValue());
+            auto val2 = std::get<std::string>(p2.get()->GetValue());
+
+            return val1 == val2;
+        }
+
+        if (type1 == ExpressionType::FracOp) {
+            auto val1 = std::get<std::pair<int, int>>(p1.get()->GetValue());
+            auto val2 = std::get<std::pair<int, int>>(p2.get()->GetValue());
+
+            return val1 == val2;
+        }
+        
+        int n = p1.get()->subexpressions.size();
+        if (p1.get()->subexpressions.size() != p2.get()->subexpressions.size()) {
+            return false;
+        }
+
+        bool isEqual = true;
+        for (int i = 0; i < n; i++) {
+            if (!this->Equal(p1.get()->subexpressions[i], p2.get()->subexpressions[i])) {
+                isEqual = false;
+                break;
+            }
+        }
+
+        return isEqual;
+    }
+
+    return false;
+}

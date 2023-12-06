@@ -246,6 +246,26 @@ void TermConstTest() {
     }*/
 }
 
+void EqualizeTest() {
+    //Equalize test - passed
+    /*std::string infix   = "2*x^2+1/3^2*\\sin{3}";
+    std::string infix2  = "2*x^2+1/3^2*\\sin{3}";
+
+    astParser.Reset();
+    ASTNode* root = astParser.Parse(infix);
+    auto rootExp = astConverter.ConvertASTToExpressionTree(root);
+    astConverter.FlattenProductExpressionTree(rootExp);
+    astConverter.FlattenSumExpressionTree(rootExp);
+
+    astParser.Reset();
+    ASTNode* root2 = astParser.Parse(infix2);
+    auto rootExp2 = astConverter.ConvertASTToExpressionTree(root2);
+    astConverter.FlattenProductExpressionTree(rootExp2);
+    astConverter.FlattenSumExpressionTree(rootExp2);
+
+    std::cout << "Equal: " << expressionSorter.Equal(rootExp, rootExp2) << '\n';*/
+}
+
 void PreInitializeTest() {
     //DO NOT PUT SHIT IN HERE UNLESS YOU'RE SURE THEY RUN BEFORE INITIALIZATION HAPPENS
 }
@@ -258,6 +278,7 @@ void PostInitializeTest() {
     ExpressionTest();
     RandomValueTest();
     TermConstTest();
+    EqualizeTest();
 }
 
 void Initialize() {

@@ -37,6 +37,9 @@ class ExpressionSorter: Monobehaviour<sf::RenderWindow*, ExpressionManager*> {
         std::weak_ptr<Expression> Term(std::weak_ptr<Expression> u);
         std::weak_ptr<Expression> Constant(std::weak_ptr<Expression> u);
 
+        bool OrderRelation(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
+        bool Equal(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
+
     private:
         
 
