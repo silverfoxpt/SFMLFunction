@@ -41,8 +41,8 @@ class SimplifyRational: Monobehaviour<sf::RenderWindow*, ExpressionManager*> {
         std::weak_ptr<Expression> EvaluateProduct(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
         std::weak_ptr<Expression> EvaluatePower(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
 
-        int Compare(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
-        int Compare(std::weak_ptr<Expression> u, float val);
+        int CompareRational(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
+        int CompareRational(std::weak_ptr<Expression> u, float val);
 
     private:
         int gcd(int a, int b);

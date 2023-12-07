@@ -96,10 +96,9 @@ void EvaluateParserTest() {
     assert(std::abs(parser.Evaluate(infix) - (0.54495))  <= Math::FloatExponent);
 }
 
-//NOTE: REMEMBER TO DEACTIVATE THIS TEST
 void ASTParserTest() {
-    std::string infix = "0";
-    ASTNode* root = astParser.Parse(infix);
+    //std::string infix = "0";
+    //ASTNode* root = astParser.Parse(infix);
     //astParser.Debug(root, 0);
 }
 
@@ -266,6 +265,56 @@ void EqualizeTest() {
     std::cout << "Equal: " << expressionSorter.Equal(rootExp, rootExp2) << '\n';*/
 }
 
+//helper function, please don't mess with it too much
+std::weak_ptr<Expression> infixToFlattenedExpression(std::string infix) {
+    astParser.Reset();
+    ASTNode* root = astParser.Parse(infix);
+    auto rootExp = astConverter.ConvertASTToExpressionTree(root);
+    astConverter.FlattenProductExpressionTree(rootExp);
+    astConverter.FlattenSumExpressionTree(rootExp);
+
+    return rootExp;
+}
+
+void TestOrderRelation() {
+    //First test - Constant vs Constant
+    auto first      = expressionManager.AddConvertibleExpression(IntegerExpression(5));
+    auto second     = expressionManager.AddConvertibleExpression(FractionExpression({5, 2}));
+    assert(expressionSorter.OrderRelation(first, second) == false);
+
+    //Second test - Constant vs Any other
+    auto first2     = expressionManager.AddConvertibleExpression(IntegerExpression(2));
+    auto second2    = infixToFlattenedExpression("2+5");
+    assert(expressionSorter.OrderRelation(first2, second2) == true);
+
+    //Third test - Symbol vs Symbol
+    auto first3     = expressionManager.AddConvertibleExpression(SymbolExpression("a"));
+    auto second3    = expressionManager.AddConvertibleExpression(SymbolExpression("b"));
+    assert(expressionSorter.OrderRelation(first3, second3) == true);
+
+    //Fourth test - Symbol vs Constant
+    //auto first4     = expressionManager.AddConvertibleExpression(SymbolExpression("a"));
+    //auto second4    = expressionManager.AddConvertibleExpression(FractionExpression({5, 2}));
+    //assert(expressionSorter.OrderRelation(first4, second4) == false);
+
+    //Fifth test - Product vs Product (1)
+    auto first5     = infixToFlattenedExpression("a*b");
+    auto second5    = infixToFlattenedExpression("a*c");
+    assert(expressionSorter.OrderRelation(first5, second5) == true);
+
+    //Sixth test - Product vs Product (2)
+    auto first6     = infixToFlattenedExpression("a*c*d");
+    auto second6    = infixToFlattenedExpression("b*c*d");
+    assert(expressionSorter.OrderRelation(first6, second6) == true);
+
+    //Seventh test - Product vs Product (3)
+    auto first7     = infixToFlattenedExpression("c*d");
+    auto second7    = infixToFlattenedExpression("b*c*d");
+    assert(expressionSorter.OrderRelation(first7, second7) == true);
+
+    std::cout << "Passed all Test Order Relations!\n";
+}
+
 void PreInitializeTest() {
     //DO NOT PUT SHIT IN HERE UNLESS YOU'RE SURE THEY RUN BEFORE INITIALIZATION HAPPENS
 }
@@ -279,6 +328,8 @@ void PostInitializeTest() {
     RandomValueTest();
     TermConstTest();
     EqualizeTest();
+
+    TestOrderRelation();
 }
 
 void Initialize() {
@@ -302,7 +353,7 @@ void Initialize() {
     simplifyRational.Initialize(&window, &expressionManager);
 
     astConverter.Initialize(&window, &astParser, &expressionManager);
-    expressionSorter.Initialize(&window, &expressionManager);
+    expressionSorter.Initialize(&window, &expressionManager, &simplifyRational);
 
     PostInitializeTest();
 }

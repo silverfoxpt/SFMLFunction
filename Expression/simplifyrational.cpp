@@ -223,7 +223,7 @@ std::weak_ptr<Expression> SimplifyRational::EvaluatePower(std::weak_ptr<Expressi
 }
 
 //comparison functions down there! Careful!
-int SimplifyRational::Compare(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v) {
+int SimplifyRational::CompareRational(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v) {
     auto u1 = u.lock();
     auto v1 = v.lock();
 
@@ -258,7 +258,7 @@ int SimplifyRational::Compare(std::weak_ptr<Expression> u, std::weak_ptr<Express
 
 //unsafe for a CAS - but it works ¯\_(ツ)_/¯ 
 //probably use for integer comparison mostly. Pray god it works
-int SimplifyRational::Compare(std::weak_ptr<Expression> u, float val) {
+int SimplifyRational::CompareRational(std::weak_ptr<Expression> u, float val) {
     auto u1 = u.lock();
     if (u1) {
         std::pair<int, int> value1;

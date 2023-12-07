@@ -1,5 +1,5 @@
-#ifndef H_SORTER
-#define H_SORTER
+#ifndef H_EXPRESSIONSORTER
+#define H_EXPRESSIONSORTER
 
 #include <SFML/Graphics.hpp>
 
@@ -14,19 +14,22 @@
 
 #include "expressionmanager.h"
 #include "expression.h"
+#include "simplifyrational.h"
 
 #include "../Reuseable/templateclass.h"
 #include "Types/undefinedexp.h"
 #include "Types/prodexp.h"
+#include "Types/powexp.h"
 #include "Types/integerexp.h"
 #include "Types/fracexp.h"
 
-class ExpressionSorter: Monobehaviour<sf::RenderWindow*, ExpressionManager*> {
+class ExpressionSorter: Monobehaviour<sf::RenderWindow*, ExpressionManager*, SimplifyRational*> {
     public:
         sf::RenderWindow* window;
         ExpressionManager* expressionManager;
+        SimplifyRational* simplifyRational;
 
-        void Initialize(sf::RenderWindow* window, ExpressionManager* expressionManager) override;
+        void Initialize(sf::RenderWindow* window, ExpressionManager* expressionManager, SimplifyRational* simplifyRational) override;
         void Update(sf::Event event) override;
         void Visualize(sf::Event event) override;
         void LateUpdate() override;
