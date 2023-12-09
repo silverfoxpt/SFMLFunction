@@ -22,6 +22,7 @@
 #include "Types/powexp.h"
 #include "Types/integerexp.h"
 #include "Types/fracexp.h"
+#include "Types/sumexp.h"
 
 class ExpressionSorter: Monobehaviour<sf::RenderWindow*, ExpressionManager*, SimplifyRational*> {
     public:
@@ -42,6 +43,8 @@ class ExpressionSorter: Monobehaviour<sf::RenderWindow*, ExpressionManager*, Sim
 
         bool OrderRelation(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
         bool Equal(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
+
+        void SortExpression(std::weak_ptr<Expression> u);
 
     private:
         

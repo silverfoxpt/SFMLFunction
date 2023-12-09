@@ -161,7 +161,7 @@ bool ExpressionSorter::OrderRelation(std::weak_ptr<Expression> u, std::weak_ptr<
             }
 
             //Others - To the left - To be handled differently
-            return false;
+            return (!(this->OrderRelation(v, u)));
         }
 
         //u is Product
@@ -196,7 +196,7 @@ bool ExpressionSorter::OrderRelation(std::weak_ptr<Expression> u, std::weak_ptr<
             }
 
             //Others - To the left - To be handled differently
-            return false;
+            return (!(this->OrderRelation(v, u)));
         }
 
         //u is Power
@@ -222,7 +222,86 @@ bool ExpressionSorter::OrderRelation(std::weak_ptr<Expression> u, std::weak_ptr<
             }
 
             //Others - To the left - To be handled differently
-            return false;
+            return (!(this->OrderRelation(v, u)));
+        }
+
+        //u is Product
+        if (type1 == ExpressionType::SumOp) {
+            if (type2 == ExpressionType::SumOp) { // Rule O-3
+                int i = p1.get()->subexpressions.size()-1;
+                int j = p2.get()->subexpressions.size()-1;
+
+                while (i >= 0 && j >= 0) {
+                    auto u1 = p1.get()->subexpressions[i];
+                    auto v1 = p2.get()->subexpressions[j];
+
+                    if (this->Equal(u1, v1)) {
+                        i--; j--;
+                        continue;
+                    }
+
+                    return this->OrderRelation(u1, v1);
+                }
+
+                //if everything checked out - Compare number of operands
+                return p1.get()->subexpressions.size() < p2.get()->subexpressions.size();
+            }
+
+            else if ( p2.get()->isFunction() || type2 == ExpressionType::Symbol) 
+            {
+                SumExpression sum("+");
+                sum.AddSubexpression(v);
+
+                return this->OrderRelation(u, this->expressionManager->AddConvertibleExpression(sum));
+            }
+
+            //Others - To the left - To be handled differently
+            return (!(this->OrderRelation(v, u)));
+        }
+
+        if (p1.get()->isFunction()) {
+            if (p2.get()->isFunction()) {
+                std::string val1 = std::get<std::string>(p1.get()->GetValue());
+                std::string val2 = std::get<std::string>(p2.get()->GetValue());
+
+                if (val1 != val2) { //if two type of function is different
+                    return val1 < val2; //return based on lexicographical order
+                }
+
+                else { //same to rule O-3 -> Compare all operands from right to left, if all match, compare number of operands
+                    int i = p1.get()->subexpressions.size()-1;
+                    int j = p2.get()->subexpressions.size()-1;
+
+                    while (i >= 0 && j >= 0) {
+                        auto u1 = p1.get()->subexpressions[i];
+                        auto v1 = p2.get()->subexpressions[j];
+
+                        if (this->Equal(u1, v1)) {
+                            i--; j--;
+                            continue;
+                        }
+
+                        return this->OrderRelation(u1, v1);
+                    }
+
+                    //if everything checked out - Compare number of operands
+                    return p1.get()->subexpressions.size() < p2.get()->subexpressions.size();
+                }
+            }
+
+            else if (type2 == ExpressionType::Symbol) {
+                std::string val1 = std::get<std::string>(p1.get()->GetValue());
+                std::string val2 = std::get<std::string>(p2.get()->GetValue());
+
+                if (val1 == val2)  {
+                    return false;
+                } else {
+                    return val1 < val2; //lexicographically between function's type and symbol string
+                }
+            }
+
+            //Others - To the left - To be handled differently
+            return (!(this->OrderRelation(v, u)));
         }
 
         return false;
@@ -285,4 +364,14 @@ bool ExpressionSorter::Equal(const std::weak_ptr<Expression> u, const std::weak_
     }
 
     return false;
+}
+
+void ExpressionSorter::SortExpression(std::weak_ptr<Expression> u) {
+    if (auto pt = u.lock()) {
+        auto& tmp = pt.get()->subexpressions;
+
+        std::sort(tmp.begin(), tmp.end(), [this](const auto& a, const auto& b) {
+            return this->OrderRelation(a, b);
+        });
+    }
 }

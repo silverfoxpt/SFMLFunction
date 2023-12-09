@@ -312,7 +312,21 @@ void TestOrderRelation() {
     auto second7    = infixToFlattenedExpression("b*c*d");
     assert(expressionSorter.OrderRelation(first7, second7) == true);
 
+    //Eighth test - Function vs Function
+    auto first8     = infixToFlattenedExpression("\\sin{3}");
+    auto second8    = infixToFlattenedExpression("\\sin{4}");
+    assert(expressionSorter.OrderRelation(first8, second8) == true);
+
     std::cout << "Passed all Test Order Relations!\n";
+}
+
+void SorterTest() {
+    auto exp = infixToFlattenedExpression("c+b*a+a*\\sin{b+a}+a^b+c*d*a+2");
+    expressionSorter.SortExpression(exp);
+
+    if (auto pt = exp.lock()) {
+        ASTConverter::Debug(exp, 0);
+    }
 }
 
 void PreInitializeTest() {
@@ -330,6 +344,7 @@ void PostInitializeTest() {
     EqualizeTest();
 
     TestOrderRelation();
+    SorterTest();
 }
 
 void Initialize() {
