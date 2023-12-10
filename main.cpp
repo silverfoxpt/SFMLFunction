@@ -321,12 +321,14 @@ void TestOrderRelation() {
 }
 
 void SorterTest() {
-    auto exp = infixToFlattenedExpression("c+b*a+a*\\sin{b+a}+a^b+c*d*a+2");
-    expressionSorter.SortExpression(exp);
+    //sorter test - passed
+    /*
+    auto exp = infixToFlattenedExpression("c+b*a+a*\\sin{b+a}+a^b+c*d*a+2*c*a*d+3*a^b");
+    expressionSorter.RecursiveSortExpression(exp);
 
     if (auto pt = exp.lock()) {
         ASTConverter::Debug(exp, 0);
-    }
+    }*/
 }
 
 void PreInitializeTest() {

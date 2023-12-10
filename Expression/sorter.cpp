@@ -375,3 +375,14 @@ void ExpressionSorter::SortExpression(std::weak_ptr<Expression> u) {
         });
     }
 }
+
+void ExpressionSorter::RecursiveSortExpression(std::weak_ptr<Expression> u) {
+    if (auto pt = u.lock()) {
+        auto& tmp = pt.get()->subexpressions;
+        for (auto sub: tmp) {
+            this->RecursiveSortExpression(sub);
+        }
+        
+        this->SortExpression(u);
+    }
+}

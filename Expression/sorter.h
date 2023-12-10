@@ -45,6 +45,7 @@ class ExpressionSorter: Monobehaviour<sf::RenderWindow*, ExpressionManager*, Sim
         bool Equal(std::weak_ptr<Expression> u, std::weak_ptr<Expression> v);
 
         void SortExpression(std::weak_ptr<Expression> u);
+        void RecursiveSortExpression(std::weak_ptr<Expression> u);
 
     private:
         
