@@ -334,9 +334,10 @@ void SorterTest() {
 }
 
 void AutoSimplifyTest() {
-    auto exp = infixToFlattenedExpression("1*2^(-3)*2/3*a^2*a^(-1)");
+    auto exp = infixToFlattenedExpression("(2*a+b+c-4)^2*(2*a+b+c-4)+9*a*b*3+1/2*c*x*1/2*3+12*a*b*a*b^2");
     auto simp = autoSimplify.AutoSimplify(exp);
 
+    std::cout << "\nSimplify:\n";
     if (auto pt = simp.lock()) {
         ASTConverter::Debug(simp, 0);
     }

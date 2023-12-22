@@ -48,6 +48,7 @@ class ExpressionAutoSimplify: Monobehaviour<sf::RenderWindow*, ExpressionManager
 
         std::weak_ptr<Expression> SimplifyProduct(std::weak_ptr<Expression> u);
         std::weak_ptr<Expression> SimplifySum(std::weak_ptr<Expression> u);
+        std::weak_ptr<Expression> SimplifyFunction(std::weak_ptr<Expression> u);
 };
 
 #endif

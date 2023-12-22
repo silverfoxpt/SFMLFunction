@@ -62,6 +62,11 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::AutoSimplify(std::weak_ptr<Exp
             return this->SimplifySum(u);
         }
 
+        //function simplification
+        if (pt.get()->isFunction()) {
+            return this->SimplifyFunction(u);
+        }
+
         //if everything fail
         return u;
     }
@@ -247,6 +252,8 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyProduct(std::weak_ptr<
 
         //Rule SPRD - 4 -> Reduce
         this->expressionSorter->SortExpression(u);
+        subs = p1.get()->subexpressions;
+
         std::vector<std::weak_ptr<Expression>> res; res.push_back(subs[0]);
 
         for (int i = 1; i < (int) subs.size(); i++) {
@@ -347,5 +354,172 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyProduct(std::weak_ptr<
 }
 
 std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifySum(std::weak_ptr<Expression> u) { 
-    return u;
+    auto p1 = u.lock();
+
+    if (p1) {
+        auto subs = p1.get()->subexpressions;
+
+        //Rule SSUM - 0
+        if ((int) subs.size() == 0) {
+            return this->expressionManager->AddConvertibleExpression(IntegerExpression(0));
+        }
+
+        //Rule SSUM - 1
+        for (auto sub: subs) {
+            auto pt = sub.lock();
+            if (pt) {
+                if (pt.get()->GetType() == ExpressionType::Undefined) {
+                    return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+                }
+            }
+        }
+
+        //Rule SSUM - 2 - DOES NOT APPLY WITH SUMS
+        /*for (auto sub: subs) {
+            auto pt = sub.lock();
+            if (pt) {
+                if (pt.get()->GetType() == ExpressionType::Integer) {
+                    int val = std::get<int>(pt.get()->GetValue());
+                    if (val == 0) {
+                        return this->expressionManager->AddConvertibleExpression(IntegerExpression(0));
+                    }
+                }
+            }
+        }*/
+
+        //Rule SSUM - 3
+        if ((int) subs.size() == 1) {
+            return subs[0];
+        }
+
+        //Rule SSUM - 4 -> Reduce
+        this->expressionSorter->SortExpression(u);
+        subs = p1.get()->subexpressions;
+
+        std::vector<std::weak_ptr<Expression>> res; res.push_back(subs[0]);
+
+        for (int i = 1; i < (int) subs.size(); i++) {
+            auto first = res.back();
+            auto sec = subs[i];
+
+            auto pa = first.lock(), pb = sec.lock();
+            if (pa && pb) {
+                //case which both are constant
+                if (pa.get()->isConstant() && pb.get()->isConstant()) {
+                    SumExpression sum("+");
+                    sum.AddSubexpression({first, sec});
+
+                    res.pop_back();
+                    res.push_back(this->simplifyRational->SimpilfyRNE(
+                        this->expressionManager->AddConvertibleExpression(sum)
+                    ));
+                }
+
+                //case which one is constant and one is not
+                else if (pa.get()->isConstant() && (!pb.get()->isConstant())) {
+                    res.push_back(sec); continue;
+                }
+
+                //case which both are not constant
+                else {
+                    auto term1 = this->expressionSorter->Term(first);
+
+                    //case of C1*A + C2*A = (C1 + C2)*A with C1, C2 are constants
+                    if (this->expressionSorter->Equal(term1, this->expressionSorter->Term(sec))) {
+                        auto con1 = this->expressionSorter->Constant(first);
+                        auto con2 = this->expressionSorter->Constant(sec);
+
+                        SumExpression sums("+");
+                        sums.AddSubexpression({con1, con2});
+
+                        auto trueExp = this->SimplifySum(this->expressionManager->AddConvertibleExpression(sums));
+
+                        ProductExpression prod("*");
+                        prod.AddSubexpression({trueExp, term1});
+
+                        res.pop_back();
+                        res.push_back(this->SimplifyProduct(this->expressionManager->AddConvertibleExpression(prod)));
+                    }
+                    
+                    //there's nothing else left to check
+                    else {
+                        res.push_back(sec); continue;
+                    }
+                }
+            } 
+
+            else {
+                return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+            }
+        }
+
+        //TO DO: Remove all redundant 0s. That means, if there is more than one 0s in the operators list, it shouldn't be there
+        //This can happen when two operator that is not constant blow up each other: a + (-a) = 0
+
+        bool diffThan0 = false;
+        auto onlyzero = this->expressionManager->AddConvertibleExpression(IntegerExpression(0));
+
+        for (int i = 0; i < (int) res.size(); i++) {
+            if (!this->expressionSorter->Equal(res[i], onlyzero)) {
+                diffThan0 = true; break;
+            }
+        }
+
+        if (diffThan0) { //remove all ones
+            std::vector<std::weak_ptr<Expression>> res2;
+            for (int i = 0; i < (int) res.size(); i++) {
+                if (!this->expressionSorter->Equal(res[i], onlyzero)) {
+                    res2.push_back(res[i]);
+                }
+            }
+
+            if (res2.size() == 1) {
+                return res2[0];
+            }
+
+            else {
+                SumExpression sums("+");
+                sums.AddSubexpression(res2);
+
+                return this->expressionManager->AddConvertibleExpression(sums);
+            }
+        } 
+        
+        else { //returning one 0 is enough
+            return onlyzero;
+        }
+    }
+
+    else {
+        return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+    }
+}
+
+std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyFunction(std::weak_ptr<Expression> u) {
+    auto pt = u.lock();
+
+    if (pt) {
+        auto subs = pt.get()->subexpressions;
+
+        //Rule SFUNC - 0
+        if ((int) subs.size() == 0) {
+            return this->expressionManager->AddConvertibleExpression(IntegerExpression(0));
+        }
+
+        //Rule SFUNC - 1
+        for (auto sub: subs) {
+            auto pt = sub.lock();
+            if (pt) {
+                if (pt.get()->GetType() == ExpressionType::Undefined) {
+                    return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+                }
+            }
+        }
+
+        return u;
+    } 
+
+    else {
+        return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+    }
 }
