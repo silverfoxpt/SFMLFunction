@@ -47,8 +47,14 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::AutoSimplify(std::weak_ptr<Exp
         }
         pt.get()->subexpressions = simplifySub;
 
+        //power simplification
         if (type == ExpressionType::PowOp) {
             return this->SimplifyPower(u);
+        }
+
+        //product simplification
+        if (type == ExpressionType::ProdOp) {
+            return this->SimplifyProduct(u);
         }
 
         //if everything fail
@@ -201,6 +207,11 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyProduct(std::weak_ptr<
     if (p1) {
         auto subs = p1.get()->subexpressions;
 
+        //Rule SPRD - 0
+        if (subs.size() == 0) {
+            return this->expressionManager->AddConvertibleExpression(IntegerExpression(1));
+        }
+
         //Rule SPRD - 1
         for (auto sub: subs) {
             auto pt = sub.lock();
@@ -230,7 +241,106 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyProduct(std::weak_ptr<
         }
 
         //Rule SPRD - 4 -> Reduce
+        this->expressionSorter->SortExpression(u);
+        std::vector<std::weak_ptr<Expression>> res; res.push_back(subs[0]);
+
+        for (int i = 1; i < subs.size(); i++) {
+            auto first = res.back();
+            auto sec = subs[i];
+
+            auto pa = first.lock(), pb = sec.lock();
+            if (pa && pb) {
+                //case which both are constant
+                if (pa.get()->isConstant() && pb.get()->isConstant()) {
+                    ProductExpression prod("*");
+                    prod.AddSubexpression({first, sec});
+
+                    res.pop_back();
+                    res.push_back(this->simplifyRational->SimpilfyRNE(
+                        this->expressionManager->AddConvertibleExpression(prod)
+                    ));
+                }
+
+                //case which one is constant and one is not
+                else if (pa.get()->isConstant() && (!pb.get()->isConstant())) {
+                    res.push_back(sec); continue;
+                }
+
+                //case which both are not constant
+                else {
+                    auto base1 = this->expressionSorter->Base(first);
+
+                    //case of A^X + A^Y = A^(X+Y)
+                    if (this->expressionSorter->Equal(base1, this->expressionSorter->Base(sec))) {
+                        auto exp1 = this->expressionSorter->Exponent(first);
+                        auto exp2 = this->expressionSorter->Exponent(sec);
+
+                        SumExpression sums("+");
+                        sums.AddSubexpression({exp1, exp2});
+
+                        auto trueExp = this->SimplifySum(this->expressionManager->AddConvertibleExpression(sums));
+
+                        PowerExpression pows("^");
+                        pows.AddSubexpression({base1, trueExp});
+
+                        res.pop_back();
+                        res.push_back(this->SimplifyPower(this->expressionManager->AddConvertibleExpression(pows)));
+                    }
+                    
+                    //there's nothing else left to check
+                    else {
+                        res.push_back(sec); continue;
+                    }
+                }
+            } 
+
+            else {
+                return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+            }
+        }
+
+        //TO DO: Remove all redundant 1s. That means, if there is more than one 1s in the operators list, it shouldn't be there
+        //This can happen when two operator that is not constant blow up each other: a^-1 * a = 1
+
+        bool diffThan1 = false;
+        auto onlyone = this->expressionManager->AddConvertibleExpression(IntegerExpression(1));
+
+        for (int i = 0; i < res.size(); i++) {
+            if (!this->expressionSorter->Equal(res[i], onlyone)) {
+                diffThan1 = true; break;
+            }
+        }
+
+        if (diffThan1) { //remove all ones
+            std::vector<std::weak_ptr<Expression>> res2;
+            for (int i = 0; i < res.size(); i++) {
+                if (!this->expressionSorter->Equal(res[i], onlyone)) {
+                    res2.push_back(res[i]);
+                }
+            }
+
+            if (res2.size() == 1) {
+                return res2[0];
+            }
+
+            else {
+                ProductExpression prod("*");
+                prod.AddSubexpression(res2);
+
+                return this->expressionManager->AddConvertibleExpression(prod);
+            }
+        } 
+        
+        else { //returning one 1 is enough
+            return onlyone;
+        }
     }
 
-    return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+    else {
+        return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
+    }
+}
+
+std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifySum(std::weak_ptr<Expression> u) { 
+    return u;
 }

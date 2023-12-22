@@ -47,6 +47,7 @@ class ExpressionAutoSimplify: Monobehaviour<sf::RenderWindow*, ExpressionManager
         std::weak_ptr<Expression> SimplifyIntegerPower(std::weak_ptr<Expression> v, std::weak_ptr<Expression> w);
 
         std::weak_ptr<Expression> SimplifyProduct(std::weak_ptr<Expression> u);
+        std::weak_ptr<Expression> SimplifySum(std::weak_ptr<Expression> u);
 };
 
 #endif
