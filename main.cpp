@@ -34,6 +34,7 @@
 #include "Expression/astconvert.h"
 #include "Expression/simplifyrational.h"
 #include "Expression/sorter.h"
+#include "Expression/autosimplify.h"
 
 //really early stuff initialization
 Rand Randomize::rand;
@@ -57,6 +58,7 @@ ExpressionManager expressionManager;
 ASTConverter astConverter;
 SimplifyRational simplifyRational;
 ExpressionSorter expressionSorter;
+ExpressionAutoSimplify autoSimplify;
 
 //static vars
 float GameManager::windowWidth                  = window.getSize().x;
@@ -331,6 +333,15 @@ void SorterTest() {
     }*/
 }
 
+void AutoSimplifyTest() {
+    auto exp = infixToFlattenedExpression("1*2^(-3)*2/3*a^2*a^(-1)");
+    auto simp = autoSimplify.AutoSimplify(exp);
+
+    if (auto pt = simp.lock()) {
+        ASTConverter::Debug(simp, 0);
+    }
+}
+
 void PreInitializeTest() {
     //DO NOT PUT SHIT IN HERE UNLESS YOU'RE SURE THEY RUN BEFORE INITIALIZATION HAPPENS
 }
@@ -347,6 +358,7 @@ void PostInitializeTest() {
 
     TestOrderRelation();
     SorterTest();
+    AutoSimplifyTest();
 }
 
 void Initialize() {
@@ -371,6 +383,7 @@ void Initialize() {
 
     astConverter.Initialize(&window, &astParser, &expressionManager);
     expressionSorter.Initialize(&window, &expressionManager, &simplifyRational);
+    autoSimplify.Initialize(&window, &expressionManager, &simplifyRational, &expressionSorter);
 
     PostInitializeTest();
 }

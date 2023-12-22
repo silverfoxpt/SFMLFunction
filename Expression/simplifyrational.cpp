@@ -148,6 +148,8 @@ std::weak_ptr<Expression> SimplifyRational::EvaluateSum(const std::weak_ptr<Expr
         return this->expressionManager->AddConvertibleExpression(
             FractionExpression({value1.first * value2.second + value2.first * value1.second, value1.second * value2.second})
         );
+    } else {
+        return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
     }
 }
 
@@ -173,6 +175,8 @@ std::weak_ptr<Expression> SimplifyRational::EvaluateProduct(const std::weak_ptr<
         return this->expressionManager->AddConvertibleExpression(
             FractionExpression({value1.first * value2.first, value1.second * value2.second})
         );
+    } else {
+        return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
     }
 }
 

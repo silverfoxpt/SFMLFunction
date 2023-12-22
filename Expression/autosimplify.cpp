@@ -57,6 +57,11 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::AutoSimplify(std::weak_ptr<Exp
             return this->SimplifyProduct(u);
         }
 
+        //sum simplification
+        if (type == ExpressionType::SumOp) {
+            return this->SimplifySum(u);
+        }
+
         //if everything fail
         return u;
     }
@@ -208,7 +213,7 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyProduct(std::weak_ptr<
         auto subs = p1.get()->subexpressions;
 
         //Rule SPRD - 0
-        if (subs.size() == 0) {
+        if ((int) subs.size() == 0) {
             return this->expressionManager->AddConvertibleExpression(IntegerExpression(1));
         }
 
@@ -236,7 +241,7 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyProduct(std::weak_ptr<
         }
 
         //Rule SPRD - 3
-        if (subs.size() == 1) {
+        if ((int) subs.size() == 1) {
             return subs[0];
         }
 
@@ -244,7 +249,7 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyProduct(std::weak_ptr<
         this->expressionSorter->SortExpression(u);
         std::vector<std::weak_ptr<Expression>> res; res.push_back(subs[0]);
 
-        for (int i = 1; i < subs.size(); i++) {
+        for (int i = 1; i < (int) subs.size(); i++) {
             auto first = res.back();
             auto sec = subs[i];
 
@@ -305,7 +310,7 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyProduct(std::weak_ptr<
         bool diffThan1 = false;
         auto onlyone = this->expressionManager->AddConvertibleExpression(IntegerExpression(1));
 
-        for (int i = 0; i < res.size(); i++) {
+        for (int i = 0; i < (int) res.size(); i++) {
             if (!this->expressionSorter->Equal(res[i], onlyone)) {
                 diffThan1 = true; break;
             }
@@ -313,7 +318,7 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifyProduct(std::weak_ptr<
 
         if (diffThan1) { //remove all ones
             std::vector<std::weak_ptr<Expression>> res2;
-            for (int i = 0; i < res.size(); i++) {
+            for (int i = 0; i < (int) res.size(); i++) {
                 if (!this->expressionSorter->Equal(res[i], onlyone)) {
                     res2.push_back(res[i]);
                 }
