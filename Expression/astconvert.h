@@ -39,6 +39,8 @@ class ASTConverter: Monobehaviour<sf::RenderWindow*, ASTParser*, ExpressionManag
         void Reset() override;
 
         std::weak_ptr<Expression> ConvertASTToExpressionTree(ASTNode* root);
+        ASTNode* ConvertExpressionTreeToAST(std::weak_ptr<Expression> root);
+
         std::vector<std::weak_ptr<Expression>> FlattenProductExpressionTree(std::weak_ptr<Expression> root);
         std::vector<std::weak_ptr<Expression>> FlattenSumExpressionTree(std::weak_ptr<Expression> root);
 
@@ -50,6 +52,13 @@ class ASTConverter: Monobehaviour<sf::RenderWindow*, ASTParser*, ExpressionManag
             {TokenType::SINE, ExpressionType::Sine},
             {TokenType::COTANGENT, ExpressionType::Cotangent},
             {TokenType::TANGENT, ExpressionType::Tangent}
+        };
+
+        std::map<ExpressionType, TokenType> convertTypeFunctionBackward = {
+            {ExpressionType::Cosine, TokenType::COSINE},
+            {ExpressionType::Sine, TokenType::SINE},
+            {ExpressionType::Cotangent, TokenType::COTANGENT},
+            {ExpressionType::Tangent, TokenType::TANGENT}
         };
 };
 

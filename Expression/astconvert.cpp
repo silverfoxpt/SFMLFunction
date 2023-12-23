@@ -147,6 +147,124 @@ std::weak_ptr<Expression> ASTConverter::ConvertASTToExpressionTree(ASTNode* root
     return std::weak_ptr<Expression>();
 }
 
+//only works for sanitized tree!
+ASTNode* ASTConverter::ConvertExpressionTreeToAST(std::weak_ptr<Expression> root) {
+    auto pt = root.lock();
+    if (pt) {
+        auto type = pt.get()->GetType();
+        auto val = pt.get()->GetValue();
+        auto subs = pt.get()->subexpressions;
+
+        if (type == ExpressionType::Undefined) {
+            ASTNode nullval("NULL", "NULL", TokenType::NULLVAL);
+            auto newNode = this->mainParser->AddNewNode(nullval);
+
+            return newNode;
+        }
+
+        else if (type == ExpressionType::Integer) {
+            ASTNode num(std::to_string(std::get<int>(val)), "Integer", TokenType::NUMBER);
+            auto newNode = this->mainParser->AddNewNode(num);
+
+            return newNode;
+        }
+
+        else if (type == ExpressionType::FracOp) {
+            auto twoPartVal = std::get<std::pair<int, int>>(val);
+            auto first = this->ConvertExpressionTreeToAST(
+                this->expressionManager->AddConvertibleExpression(IntegerExpression(twoPartVal.first))
+            );
+            auto sec = this->ConvertExpressionTreeToAST(
+                this->expressionManager->AddConvertibleExpression(IntegerExpression(twoPartVal.second))
+            );
+
+            ASTNode frac("Quotient", "Quotient - Fraction", TokenType::DIVISION);
+            frac.AddChild({first, sec});
+            auto newNode = this->mainParser->AddNewNode(frac);
+
+            return newNode;
+        }
+
+        else if (type == ExpressionType::Symbol) {
+            ASTNode sym(std::get<std::string>(val), "Symbol", TokenType::SYMBOL);
+            auto newNode = this->mainParser->AddNewNode(sym);
+
+            return newNode;
+        }
+
+        else if (type == ExpressionType::SumOp) {
+            auto first = this->ConvertExpressionTreeToAST(subs.back()); subs.pop_back();
+            
+            ASTNode* sec = nullptr;
+            if (subs.size() >= 2) {
+                SumExpression tmpSum("+"); tmpSum.AddSubexpression(subs);
+                auto tmpExp = this->expressionManager->AddConvertibleExpression(tmpSum);
+                sec = this->ConvertExpressionTreeToAST(tmpExp);
+            } else { //only one left
+                sec = this->ConvertExpressionTreeToAST(subs.back()); subs.pop_back();
+            }
+
+            //create node
+            ASTNode sum(std::get<std::string>(val), "Sum", TokenType::ADDITION);
+            sum.AddChild({first, sec});
+            auto newNode = this->mainParser->AddNewNode(sum);
+
+            return newNode;
+        }
+
+        else if (type == ExpressionType::ProdOp) {
+            auto first = this->ConvertExpressionTreeToAST(subs.back()); subs.pop_back();
+
+            ASTNode* sec = nullptr;
+            if (subs.size() >= 2) {
+                ProductExpression tmpProd("*"); tmpProd.AddSubexpression(subs);
+                auto tmpExp = this->expressionManager->AddConvertibleExpression(tmpProd);
+                sec = this->ConvertExpressionTreeToAST(tmpExp);
+            } else { //only one left
+                sec = this->ConvertExpressionTreeToAST(subs.back()); subs.pop_back();
+            }
+
+            //create node
+            ASTNode prod(std::get<std::string>(val), "Product", TokenType::MULTIPLICATION);
+            prod.AddChild({first, sec});
+            auto newNode = this->mainParser->AddNewNode(prod);
+
+            return newNode;
+        }
+
+        else if (pt.get()->isFunction()) {
+            auto first = this->ConvertExpressionTreeToAST(subs.back());
+
+            //create node
+            ASTNode func(std::get<std::string>(val), "Function", this->convertTypeFunctionBackward[type]);
+            func.AddChild({first});
+            auto newNode = this->mainParser->AddNewNode(func);
+
+            return newNode;
+        }
+
+        else if (type == ExpressionType::PowOp) {
+            auto first = this->ConvertExpressionTreeToAST(subs[0]);
+            auto sec = this->ConvertExpressionTreeToAST(subs[1]);
+
+            //create node
+            ASTNode powe(std::get<std::string>(val), "Power", TokenType::EXPONENTIATION);
+            powe.AddChild({first, sec});
+            auto newNode = this->mainParser->AddNewNode(powe);
+
+            return newNode;
+        }
+
+        else {
+            throw std::invalid_argument("ASTConverter::ConvertExpressionTreeToAST - Conversion type not found!");
+        }
+    }
+
+    else {
+        return nullptr;
+    }
+}
+
 std::vector<std::weak_ptr<Expression>> ASTConverter::FlattenProductExpressionTree(std::weak_ptr<Expression> root) {
     if (auto pt = root.lock()) {
         if (pt.get()->GetType() != ExpressionType::ProdOp) { //not a Product tree

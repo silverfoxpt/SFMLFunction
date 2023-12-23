@@ -337,10 +337,17 @@ void AutoSimplifyTest() {
     auto exp = infixToFlattenedExpression("(2*a+b+c-4)^2*(2*a+b+c-4)+9*a*b*3+1/2*c*x*1/2*3+12*a*b*a*b^2");
     auto simp = autoSimplify.AutoSimplify(exp);
 
-    std::cout << "\nSimplify:\n";
+    std::cout << "Simplify:\n";
     if (auto pt = simp.lock()) {
         ASTConverter::Debug(simp, 0);
     }
+
+    expressionManager.Debug();
+
+    std::cout << "Reconvert back to ASTTree Structure:\n"; 
+    auto convertBack = astConverter.ConvertExpressionTreeToAST(simp);
+    astParser.Debug(convertBack, 0);
+    
 }
 
 void PreInitializeTest() {

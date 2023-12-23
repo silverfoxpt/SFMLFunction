@@ -48,6 +48,10 @@ class ExpressionManager : Monobehaviour<sf::RenderWindow*> {
             return observer;
         }
 
+        void Debug() {
+            std::cout << "Usage: " << this->controlledComponents.size() << "/100000\n";
+        }
+
         //helper functions
         template <typename T>
         std::weak_ptr<Expression> AddConvertibleExpression(T exp) {

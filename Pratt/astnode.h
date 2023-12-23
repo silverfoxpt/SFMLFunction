@@ -35,6 +35,12 @@ class ASTNode {
         void AddChild(ASTNode* node) {
             this->children.push_back(node);
         }
+
+        void AddChild(std::vector<ASTNode*> nodes) {
+            for (auto node: nodes) {
+                this->children.push_back(node);
+            }
+        }
 };  
 
 #endif
