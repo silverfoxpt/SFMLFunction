@@ -35,16 +35,18 @@ class ExpressionVisual: Monobehaviour<sf::RenderWindow*, ASTParser*, TextElement
 
         //variables
         int horizontalBuffer = 5;
+        int exponentHorizontalBuffer = 2;
         int verticalBuffer = 8;
         int lineWidthBuffer = 20;
-        float exponentScale = 0.75f;
+        float exponentScale = 0.9f;
+        float parenthesisScale = 1.2f;
 
     private:
         DisplayGroup GetDisplayGroupFromText(std::string text, Token prevToken);
         DisplayGroup GetDisplayGroupFromRec(int width, Token prevToken);
 
         DisplayGroup MergeGroupToRight(DisplayGroup first, DisplayGroup second);
-        DisplayGroup MergeGroupToBottom(DisplayGroup first, DisplayGroup second);
+        DisplayGroup MergeGroupToBottom(DisplayGroup first, DisplayGroup second, bool boundAnchorToFirst);
         DisplayGroup ParenthesizeGroup(DisplayGroup group);
         
 };

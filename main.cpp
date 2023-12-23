@@ -40,7 +40,7 @@
 Rand Randomize::rand;
 
 //public vars
-sf::RenderWindow window(sf::VideoMode(800, 800), "SFML Function");
+sf::RenderWindow window(sf::VideoMode(1200, 800), "SFML Function");
 sf::Clock deltaTime;
 
 RPN myRpn;
@@ -334,20 +334,21 @@ void SorterTest() {
 }
 
 void AutoSimplifyTest() {
-    auto exp = infixToFlattenedExpression("(2*a+b+c-4)^2*(2*a+b+c-4)+9*a*b*3+1/2*c*x*1/2*3+12*a*b*a*b^2");
-    auto simp = autoSimplify.AutoSimplify(exp);
+    //std::string infix = "(2*a+b+c-4)^2*(2*a+b+c-4)+9*a*b*3+1/2*c*x*1/2*3+12*a*b*a*b^2";
+    std::string infix = "a^((b^2^c+a)*(b^2+a))*a^b*a+3*2/9*a^2";
+    //std::string infix = "(a+b)^(c+d)^(e+f)";
+    //std::string infix = "(a/(b/c))*((a/b)/c)";
+    //std::string infix = "(a/b)*(c/d)";
 
-    std::cout << "Simplify:\n";
-    if (auto pt = simp.lock()) {
-        ASTConverter::Debug(simp, 0);
-    }
+    auto firstDisplay = expressionVisual.Evaluate(astParser.Parse(infix));
+
+    auto exp = infixToFlattenedExpression(infix);
+    auto simp = autoSimplify.AutoSimplify(exp);
+    auto convertBack = astConverter.ConvertExpressionTreeToAST(simp);
 
     expressionManager.Debug();
-
-    std::cout << "Reconvert back to ASTTree Structure:\n"; 
-    auto convertBack = astConverter.ConvertExpressionTreeToAST(simp);
-    astParser.Debug(convertBack, 0);
-    
+    auto finalDisplay = expressionVisual.Evaluate(convertBack);
+    finalDisplay.moveY(200);
 }
 
 void PreInitializeTest() {

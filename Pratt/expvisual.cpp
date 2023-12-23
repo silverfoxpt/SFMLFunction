@@ -26,16 +26,25 @@ void ExpressionVisual::Reset() {
 
 DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
     if (root->type == TokenType::NULLVAL) {
-        return DisplayGroup({}, Token(TokenType::NULLVAL, "0"));
+        return DisplayGroup({}, Token(TokenType::NULLVAL, "0"), 0);
     }
 
     if (root->children.size() == 0) { //leaf node, either number or variable, handle it
-        if (root->type == TokenType::NUMBER || root->type == TokenType::SYMBOL) {
-            return this->GetDisplayGroupFromText(root->value, Token(root->type, root->value));
+        if (root->type == TokenType::NUMBER) {
+            auto group = this->GetDisplayGroupFromText(root->value, Token(root->type, root->value));
+            if (std::stoi(root->value) < 0) { //deal with negatives
+                group = this->ParenthesizeGroup(group);
+            }
+
+            return group;
         } 
+        
+        else if (root->type == TokenType::SYMBOL) {
+            return this->GetDisplayGroupFromText(root->value, Token(root->type, root->value));
+        }
 
         //not recognized
-        return DisplayGroup({}, Token(TokenType::NULLVAL, "0"));
+        return DisplayGroup({}, Token(TokenType::NULLVAL, "0"), 0);
     }
 
     //start checking for other type of expression
@@ -120,8 +129,9 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
         auto midline = this->GetDisplayGroupFromRec(std::max(first.GetTotalWidth(), second.GetTotalWidth()) + this->lineWidthBuffer,
             Token(TokenType::NULLVAL, "0"));
 
-        auto combine = this->MergeGroupToBottom(this->MergeGroupToBottom(first, midline), second);
+        auto combine = this->MergeGroupToBottom(this->MergeGroupToBottom(first, midline, false), second, true);
         combine.prevToken = Token(root->type, root->value);
+        //combine.anchorHeight = midline.anchorHeight;
 
         return combine;
     }
@@ -131,8 +141,17 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
         auto first = Evaluate(root->children[0]);
         auto second = Evaluate(root->children[1]);
 
-        float xPosOfSecond = first.GetTotalWidth() + this->horizontalBuffer;
-        float yPosOfFirst = second.GetTotalHeight() * this->exponentScale / 2; 
+        if (first.prevToken.type != TokenType::NUMBER && first.prevToken.type != TokenType::SYMBOL
+         && first.prevToken.type != TokenType::EXPONENTIATION) {
+            first = this->ParenthesizeGroup(first);   
+        }
+
+        if (second.prevToken.type != TokenType::NUMBER && second.prevToken.type != TokenType::SYMBOL) {
+            second = this->ParenthesizeGroup(second);   
+        }
+
+        float xPosOfSecond = first.GetTotalWidth() + this->exponentHorizontalBuffer;
+        float yPosOfFirst = second.GetTotalHeight() * this->exponentScale; 
 
         first.moveY(yPosOfFirst);
         second.Scale(this->exponentScale); //scale before moving
@@ -156,14 +175,14 @@ DisplayGroup ExpressionVisual::Evaluate(ASTNode* root) {
     }
 
     //catch all
-    return DisplayGroup({}, Token(TokenType::NULLVAL, "0"));
+    return DisplayGroup({}, Token(TokenType::NULLVAL, "0"), 0);
 }
 
 //helper functions
 //get group from single text
 DisplayGroup ExpressionVisual::GetDisplayGroupFromText(std::string text, Token prevToken) {
     DisplayElement* newElement = this->textManager->CreateDisplayText(text);
-    DisplayGroup newDisplayGroup({newElement}, prevToken);
+    DisplayGroup newDisplayGroup({newElement}, prevToken, newElement->GetHeight() / 2);
 
     return newDisplayGroup;
 }
@@ -171,28 +190,34 @@ DisplayGroup ExpressionVisual::GetDisplayGroupFromText(std::string text, Token p
 //get group from single rec
 DisplayGroup ExpressionVisual::GetDisplayGroupFromRec(int width, Token prevToken) {
     DisplayElement* newElement = this->recManager->CreateDisplayRectangle(width);
-    DisplayGroup newDisplayGroup({newElement}, prevToken);
+    DisplayGroup newDisplayGroup({newElement}, prevToken, newElement->GetHeight() / 2);
 
     return newDisplayGroup;
 }
 
 //merge group second to right of group "first"
 DisplayGroup ExpressionVisual::MergeGroupToRight(DisplayGroup first, DisplayGroup second) {
+    int anchorHeight = first.anchorHeight;
+
     //adjust y value 
-    if (first.GetTotalHeight() > second.GetTotalHeight()) {
-        second.moveY((first.GetTotalHeight() - second.GetTotalHeight()) / 2);
-    } else if (first.GetTotalHeight() < second.GetTotalHeight()) {
-        first.moveY((second.GetTotalHeight() - first.GetTotalHeight()) / 2);
+    if (first.anchorHeight > second.anchorHeight) {
+        second.moveY(first.anchorHeight - second.anchorHeight);
+        anchorHeight = first.anchorHeight;
+    } else if (first.anchorHeight < second.anchorHeight) {
+        first.moveY(second.anchorHeight - first.anchorHeight);
+        anchorHeight = second.anchorHeight;
     }
 
     //move second group
     second.moveX(first.GetTotalWidth() + this->horizontalBuffer);
+
     first.Merge(second);
+    first.anchorHeight = anchorHeight;
 
     return first;
 }
 
-DisplayGroup ExpressionVisual::MergeGroupToBottom(DisplayGroup first, DisplayGroup second) {
+DisplayGroup ExpressionVisual::MergeGroupToBottom(DisplayGroup first, DisplayGroup second, bool boundAnchorToFirst) {
     //adjust x value
     if (first.GetTotalWidth() > second.GetTotalWidth()) {
         second.moveX((first.GetTotalWidth() - second.GetTotalWidth()) / 2);
@@ -204,15 +229,19 @@ DisplayGroup ExpressionVisual::MergeGroupToBottom(DisplayGroup first, DisplayGro
     second.moveY(first.GetTotalHeight() + this->verticalBuffer);
     first.Merge(second);
 
+    if (!boundAnchorToFirst) {
+        first.anchorHeight = second.anchorHeight;
+    }
+
     return first;
 }
 
 DisplayGroup ExpressionVisual::ParenthesizeGroup(DisplayGroup group) {
-    int height = group.GetTotalHeight();
+    int height = group.anchorHeight;
     auto leftParen = this->GetDisplayGroupFromText("(", Token(TokenType::NULLVAL, "0"));
     auto rightParen = this->GetDisplayGroupFromText(")", Token(TokenType::NULLVAL, "0"));
 
-    float scale = ((float) height / leftParen.GetTotalHeight());
+    float scale = ((float) height / (leftParen.GetTotalHeight() / 2));
     leftParen.Scale(scale);
     rightParen.Scale(scale);
 

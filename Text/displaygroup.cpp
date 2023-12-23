@@ -43,6 +43,8 @@ void DisplayGroup::Scale(float sc) {
         tex->Scale(sc);
         tex->SetPosition(newPos);
     }
+
+    this->anchorHeight *= sc;
 }
 
 void DisplayGroup::moveX(float x) {
@@ -55,6 +57,8 @@ void DisplayGroup::moveY(float y) {
     for (auto tex: this->elements) {
         tex->Move(sf::Vector2f(0, y));
     }
+
+    this->anchorHeight += y;
 }
 
 void DisplayGroup::Merge(DisplayGroup other) {

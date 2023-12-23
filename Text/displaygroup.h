@@ -20,9 +20,10 @@ class DisplayGroup {
         std::vector<DisplayElement*> elements;
         Token prevToken = {TokenType::NULLVAL, "0"};
 
-        DisplayGroup(std::vector<DisplayElement*> elements, Token prev) {
+        DisplayGroup(std::vector<DisplayElement*> elements, Token prev, int anchorHeight) {
             this->elements = elements;
             this->prevToken = prev;
+            this->anchorHeight = anchorHeight;
         }
 
         int GetTotalHeight();
@@ -32,10 +33,13 @@ class DisplayGroup {
         sf::Vector2f GetTop();
 
         void Scale(float sc);
+        void ScaleHeight(float sc);
         void moveX(float x);    
         void moveY(float y);
 
         void Merge(DisplayGroup other);
+
+        int anchorHeight = 0;
 };
 
 #endif
