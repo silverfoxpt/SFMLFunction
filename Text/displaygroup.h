@@ -27,7 +27,7 @@ class DisplayGroup {
         }
 
         DisplayGroup() {
-            
+
         }
 
         int GetTotalHeight();
@@ -37,11 +37,11 @@ class DisplayGroup {
         sf::Vector2f GetTop();
 
         void Scale(float sc);
-        void ScaleHeight(float sc);
         void moveX(float x);    
         void moveY(float y);
 
         void Merge(DisplayGroup other);
+        void SetPosition(sf::Vector2f pos);
 
         int anchorHeight = 0;
 };

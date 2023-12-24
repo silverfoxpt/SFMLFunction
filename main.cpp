@@ -43,7 +43,7 @@
 Rand Randomize::rand;
 
 //public vars
-sf::RenderWindow window(sf::VideoMode(2000, 800), "SFML Function");
+sf::RenderWindow window(sf::VideoMode(2000, 1100), "SFML Function");
 sf::Clock deltaTime;
 
 RPN myRpn;
@@ -68,15 +68,16 @@ float GameManager::windowWidth                  = window.getSize().x;
 float GameManager::windowHeight                 = window.getSize().y;
 float GameManager::deltaTime                    = 1/300.0;
 
-sf::Vector2u GameManager::mainWindowSize        = sf::Vector2u(2000, 800);
+sf::Vector2u GameManager::mainWindowSize        = sf::Vector2u(2000, 1100);
 sf::Vector2u GameManager::originalResolution    = sf::Vector2u(1920, 1080);
 
 //normal vars
 sf::Font font;
+sf::Font descriptionFont;
 
 std::string pastInput = "";
 
-char bufferInput[10000];
+char bufferInput[500000];
 std::string input = "";
 
 DisplayGroup originalDisplay;
@@ -391,10 +392,14 @@ void PostInitializeTest() {
 
 void MainDisplayFunction() {
     ImGui::Begin("Input");
+    ImGui::PushItemWidth(150.0f);
     ImGui::InputText("Input equation", bufferInput, IM_ARRAYSIZE(bufferInput)); input = bufferInput;
-    ImGui::End();
 
     //recalculation
+    int currentHeight = 20;
+    int width = 20;
+    int buffer = 50;
+
     if (input != pastInput) {
         try {
             //all the nice resets
@@ -404,21 +409,77 @@ void MainDisplayFunction() {
             expressionManager.Reset();
             expressionVisual.Reset();
 
+            //first text
+            firstText.setString("Raw input:"); firstText.setFont(descriptionFont); 
+            firstText.setPosition(sf::Vector2f(width, currentHeight)); 
+            currentHeight += firstText.getGlobalBounds().height + buffer;
+
+            firstEvaluation.setString(input); firstEvaluation.setFont(descriptionFont); firstEvaluation.setStyle(sf::Text::Bold);
+            firstEvaluation.setPosition(sf::Vector2f(width, currentHeight)); 
+            currentHeight += firstEvaluation.getGlobalBounds().height + buffer * 2;
+
+            //second text
+            secondText.setString("Parse result:"); secondText.setFont(descriptionFont); 
+            secondText.setPosition(sf::Vector2f(width, currentHeight)); 
+            currentHeight += secondText.getGlobalBounds().height + buffer;
+
             auto firstDisplay = expressionVisual.Evaluate(astParser.Parse(input));
+            //firstDisplay.SetPosition(sf::Vector2f(width, currentHeight));
+            firstDisplay.moveX(width); firstDisplay.moveY(currentHeight);
+            currentHeight += firstDisplay.GetTotalHeight() - firstDisplay.GetTopY() + buffer * 2;
+
+            //third text
+            thirdText.setString("Flattened, removal of Unary, Subtraction and Division operators:"); thirdText.setFont(descriptionFont); 
+            thirdText.setPosition(sf::Vector2f(width, currentHeight)); 
+            currentHeight += thirdText.getGlobalBounds().height + buffer;
 
             auto exp = infixToFlattenedExpression(input);
+            auto convertBackFlatten = astConverter.ConvertExpressionTreeToAST(exp);
+            auto middleDisplay = expressionVisual.Evaluate(convertBackFlatten);
+
+            //middleDisplay.SetPosition(sf::Vector2f(width, currentHeight));
+            middleDisplay.moveX(width); middleDisplay.moveY(currentHeight);
+            currentHeight += middleDisplay.GetTotalHeight() - middleDisplay.GetTopY() + buffer * 2;
+
+            //fourth text
+            fourthText.setString("Ordered by operators' relation & automatic simplification:"); fourthText.setFont(descriptionFont); 
+            fourthText.setPosition(sf::Vector2f(width, currentHeight)); 
+            currentHeight += fourthText.getGlobalBounds().height + buffer;
+
             auto simp = autoSimplify.AutoSimplify(exp);
-            auto convertBack = astConverter.ConvertExpressionTreeToAST(simp);
+            if (auto pt = simp.lock()) {
+                if (pt.get()->GetType() == ExpressionType::Undefined) {
+                    std::cout << "Undefined\n";
+                }
+            }
+            auto convertBackSimplify = astConverter.ConvertExpressionTreeToAST(simp);
 
             expressionManager.Debug();
-            auto finalDisplay = expressionVisual.Evaluate(convertBack);
-            finalDisplay.moveY(200);
-        } catch(std::exception e) {
+            auto finalDisplay = expressionVisual.Evaluate(convertBackSimplify);
+            
+            //finalDisplay.SetPosition(sf::Vector2f(width, currentHeight));
+            finalDisplay.moveX(width); finalDisplay.moveY(currentHeight);
+        } 
+        
+        catch(std::exception e) {
             std::cerr << "Error parsing\n";
+
+            firstText.setString("Error when parsing, please retry");
+            firstEvaluation.setString("");
+            secondText.setString("");
+            thirdText.setString("");
+            fourthText.setString("");
         }
     }
 
     //configure text
+    ImGui::End();
+
+    window.draw(firstText);
+    window.draw(firstEvaluation);
+    window.draw(secondText);
+    window.draw(thirdText);
+    window.draw(fourthText);
 
     pastInput = input;
 }
@@ -427,6 +488,11 @@ void Initialize() {
     if (!font.loadFromFile("./font/MathJax_Main-Regular.otf"))
     {
         std::cerr << "Can't load font!";
+    }
+
+    if (!descriptionFont.loadFromFile("./font/CourierPrime-Regular.ttf"))
+    {
+        std::cerr << "Can't load description font!";
     }
 
     PreInitializeTest();

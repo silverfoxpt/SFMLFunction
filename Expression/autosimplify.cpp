@@ -439,6 +439,7 @@ std::weak_ptr<Expression> ExpressionAutoSimplify::SimplifySum(std::weak_ptr<Expr
 
                         res.pop_back();
                         res.push_back(this->SimplifyProduct(this->expressionManager->AddConvertibleExpression(prod)));
+                        //res.push_back(this->expressionManager->AddConvertibleExpression(prod));
                     }
                     
                     //there's nothing else left to check

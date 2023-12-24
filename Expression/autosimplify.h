@@ -17,6 +17,7 @@
 #include "expression.h"
 #include "simplifyrational.h"
 #include "sorter.h"
+#include "astconvert.h"
 
 #include "../Reuseable/templateclass.h"
 #include "Types/undefinedexp.h"

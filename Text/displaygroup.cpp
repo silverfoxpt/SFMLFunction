@@ -66,3 +66,8 @@ void DisplayGroup::Merge(DisplayGroup other) {
         this->elements.push_back(tex);
     }
 }
+
+void DisplayGroup::SetPosition(sf::Vector2f pos) {
+    this->moveX(this->GetTopX() - pos.x);
+    this->moveY(this->GetTopY() - pos.y);
+}

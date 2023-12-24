@@ -72,10 +72,14 @@ std::weak_ptr<Expression> ExpressionSorter::Term(std::weak_ptr<Expression> u) {
                     terms.push_back(pt.get()->subexpressions[i]);
                 }
 
-                ProductExpression prod("*");
-                prod.AddSubexpression(terms);
+                if (terms.size() >= 2) {
+                    ProductExpression prod("*");
+                    prod.AddSubexpression(terms);
 
-                return this->expressionManager->AddConvertibleExpression(prod);
+                    return this->expressionManager->AddConvertibleExpression(prod);
+                } else {
+                    return terms[0];
+                }
             } else {
                 return this->expressionManager->AddConvertibleExpression(UndefinedExpression());
             }
