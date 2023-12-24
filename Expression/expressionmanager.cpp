@@ -17,5 +17,6 @@ void ExpressionManager::LateUpdate() {
 }
 
 void ExpressionManager::Reset() {
-
+    controlledComponents.clear();
+    controlledComponents.reserve(100000);
 }

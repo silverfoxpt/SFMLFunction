@@ -36,11 +36,14 @@
 #include "Expression/sorter.h"
 #include "Expression/autosimplify.h"
 
+#include "IMGUI/imgui.h"
+#include "IMGUI/imgui-SFML.h"
+
 //really early stuff initialization
 Rand Randomize::rand;
 
 //public vars
-sf::RenderWindow window(sf::VideoMode(1200, 800), "SFML Function");
+sf::RenderWindow window(sf::VideoMode(2000, 800), "SFML Function");
 sf::Clock deltaTime;
 
 RPN myRpn;
@@ -65,11 +68,26 @@ float GameManager::windowWidth                  = window.getSize().x;
 float GameManager::windowHeight                 = window.getSize().y;
 float GameManager::deltaTime                    = 1/300.0;
 
-sf::Vector2u GameManager::mainWindowSize        = sf::Vector2u(800, 800);
+sf::Vector2u GameManager::mainWindowSize        = sf::Vector2u(2000, 800);
 sf::Vector2u GameManager::originalResolution    = sf::Vector2u(1920, 1080);
 
-//test vars
+//normal vars
 sf::Font font;
+
+std::string pastInput = "";
+
+char bufferInput[10000];
+std::string input = "";
+
+DisplayGroup originalDisplay;
+DisplayGroup sanitizedDisplay;
+DisplayGroup finalDisplay;
+
+sf::Text firstText;
+sf::Text firstEvaluation;
+sf::Text secondText;
+sf::Text thirdText;
+sf::Text fourthText;
 
 void EvaluateParserTest() {
     std::string infix = "5+2*3";
@@ -334,8 +352,9 @@ void SorterTest() {
 }
 
 void AutoSimplifyTest() {
+    /*
     //std::string infix = "(2*a+b+c-4)^2*(2*a+b+c-4)+9*a*b*3+1/2*c*x*1/2*3+12*a*b*a*b^2";
-    std::string infix = "a^((b^2^c+a)*(b^2+a))*a^b*a+3*2/9*a^2";
+    std::string infix = "a^((b^2^c +a)*(b^2+a))*a^b*a+ 3*2/9*a ^2+(2*a+b+c-4) ^2 *(2*a+b+c-4)+9*a*b*3+1/2*c*x*1/2*3+12*a*b*a*b^2";
     //std::string infix = "(a+b)^(c+d)^(e+f)";
     //std::string infix = "(a/(b/c))*((a/b)/c)";
     //std::string infix = "(a/b)*(c/d)";
@@ -348,7 +367,7 @@ void AutoSimplifyTest() {
 
     expressionManager.Debug();
     auto finalDisplay = expressionVisual.Evaluate(convertBack);
-    finalDisplay.moveY(200);
+    finalDisplay.moveY(200);*/
 }
 
 void PreInitializeTest() {
@@ -368,6 +387,40 @@ void PostInitializeTest() {
     TestOrderRelation();
     SorterTest();
     AutoSimplifyTest();
+}
+
+void MainDisplayFunction() {
+    ImGui::Begin("Input");
+    ImGui::InputText("Input equation", bufferInput, IM_ARRAYSIZE(bufferInput)); input = bufferInput;
+    ImGui::End();
+
+    //recalculation
+    if (input != pastInput) {
+        try {
+            //all the nice resets
+            astParser.Reset();
+            textElementManager.Reset();
+            rectangleElementManager.Reset();
+            expressionManager.Reset();
+            expressionVisual.Reset();
+
+            auto firstDisplay = expressionVisual.Evaluate(astParser.Parse(input));
+
+            auto exp = infixToFlattenedExpression(input);
+            auto simp = autoSimplify.AutoSimplify(exp);
+            auto convertBack = astConverter.ConvertExpressionTreeToAST(simp);
+
+            expressionManager.Debug();
+            auto finalDisplay = expressionVisual.Evaluate(convertBack);
+            finalDisplay.moveY(200);
+        } catch(std::exception e) {
+            std::cerr << "Error parsing\n";
+        }
+    }
+
+    //configure text
+
+    pastInput = input;
 }
 
 void Initialize() {
@@ -420,14 +473,18 @@ void Reset() {
 int main()
 {
     Initialize();
+    ImGui::SFML::Init(window);
+
     while (window.isOpen())
     {
         sf::Event event;
         while (window.pollEvent(event))
         {
+            ImGui::SFML::ProcessEvent(window, event);
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+        ImGui::SFML::Update(window, deltaTime.restart());
 
         window.clear();
         
@@ -436,8 +493,12 @@ int main()
         Visualize(event);
         LateUpdate();
 
+        MainDisplayFunction();
+
+        ImGui::SFML::Render(window);
         window.display();
     }
 
+    ImGui::SFML::Shutdown();
     return 0;
 }

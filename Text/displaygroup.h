@@ -26,6 +26,10 @@ class DisplayGroup {
             this->anchorHeight = anchorHeight;
         }
 
+        DisplayGroup() {
+            
+        }
+
         int GetTotalHeight();
         int GetTotalWidth();
         int GetTopX();

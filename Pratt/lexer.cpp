@@ -48,6 +48,7 @@ void Lexer::Eat(TokenType type) {
 
 void Lexer::InitiateInput(std::string input) {
     this->Reset();
+    input.erase(std::remove(input.begin(), input.end(), ' '), input.end()); //remove all spaces
 
     int i = 0;
     while (i < (int) input.size()) {
